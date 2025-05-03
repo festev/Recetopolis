@@ -1,0 +1,33 @@
+ion-card {  
+    transition: transform 0.4s ease;  
+  
+    &:hover {  
+      transform: scale(1.05);  
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);  
+    }  
+  }  
+
+.hover-item {  
+    transition: background-color 0.3s ease;     /* Efecto suave de transición */  
+  
+    &:hover {  
+      background-color: var(--ion-color-light);   /* Color de fondo al pasar el mouse */  
+      color: var(--ion-color-primary);           /* Color del texto al pasar el mouse */  
+    }  
+  }  
+
+  ion-content {  
+    --background: transparent;                          /* Hacemos el fondo del ion-content transparente */  
+  
+    background-image: url('/assets/images/fondo2.jpg'); /* Ruta de la imagen */  
+    background-size: cover;                             /* Asegura que cubra toda la pantalla */  
+    background-position: center;                        /* Centramos la imagen */  
+    background-repeat: no-repeat;                       /* Evitamos que la imagen se repita */  
+  }  
+
+  ion-list {  
+    background: transparent;                /* Eliminamos el fondo */  
+    --ion-background-color: transparent;    /* Asegúramos de que Ionic no aplique un fondo por defecto */  
+    backdrop-filter: blur(10px);            /* Aplicamos un efecto de desenfoque del fondo */  
+    border-radius: 8px;                     /* tratamos las esquinas redondeadas */  
+  }  

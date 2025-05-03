@@ -1,0 +1,35 @@
+<ion-header>  
+  <meta name="mobile-web-app-capable" content="yes">  
+  <ion-toolbar>  
+    <ion-title>Favoritos</ion-title>  
+    <ion-buttons slot="end">  
+      <ion-button routerLink="/">Volver</ion-button>  
+    </ion-buttons>  
+  </ion-toolbar>  
+</ion-header>  
+
+<ion-content>  
+  <ion-list *ngIf="favoritos.length > 0; else noFavoritos">  
+    <ion-item *ngFor="let favorito of favoritos" (click)="verReceta(favorito.sourceUrl)">  
+      <ion-thumbnail slot="start">  
+        <img [src]="favorito.foto" alt="{{favorito.title}}">  
+      </ion-thumbnail>  
+      <ion-label>  
+
+        <h2>Receta {{ favorito.id }}</h2>  
+
+        <p> {{favorito.sourceUrl}}  </p>  
+         
+      </ion-label>    
+      <ion-button (click)="toggleFavorito(favorito)" slot="end">  
+        <ion-icon name="heart" color="danger"></ion-icon>  
+      </ion-button>  
+    </ion-item>  
+  </ion-list>  
+
+  <ng-template #noFavoritos>  
+    <div class="no-favoritos">  
+      <p>No tienes recetas favoritas aún.</p>  
+    </div>  
+  </ng-template>  
+</ion-content>  

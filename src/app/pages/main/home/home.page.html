@@ -1,0 +1,59 @@
+<ion-header [translucent]="true">  
+  <meta name="mobile-web-app-capable" content="yes">  
+  <ion-toolbar>  
+    <ion-title>Busqueda de Recetas</ion-title>  
+    <ion-buttons slot="end">  
+      <ion-button>  
+        <span>{{ currentTime }}</span>  
+      </ion-button>  
+    </ion-buttons>  
+  </ion-toolbar>  
+</ion-header>  
+
+<ion-content>  
+  <ion-item>  
+    <ion-label position="floating">Agregar Ingredientes</ion-label>  
+    <ion-input [(ngModel)]="ingredientToAdd" placeholder="Ejemplo: carrots"></ion-input>  
+  </ion-item>  
+  <ion-button color="primary" (click)="addIngredient()">Buscar Recetas</ion-button>  
+  <ion-button color="danger" (click)="limpiarResultados()">Limpiar Resultados</ion-button>  
+  <ion-button color="tertiary" (click)="verFavoritos()">Ver Favoritos</ion-button> 
+  
+  <ion-list>  
+    <ion-item class="hover-item" *ngFor="let recipe of recipes" (click)="getRecipeInfo(recipe.id)">  
+      <ion-thumbnail slot="start">  
+        <img [src]="recipe.image">  
+      </ion-thumbnail>  
+      <ion-label>  
+        <h2>{{ recipe.title }}</h2>  
+      </ion-label>  
+        
+        
+    </ion-item>  
+  </ion-list>  
+
+  <ion-card *ngIf="selectedRecipe">  
+    <ion-card-header>  
+      <ion-card-title>{{ selectedRecipe.title }}</ion-card-title>  
+      <ion-button fill="clear" (click)="toggleFavorito(selectedRecipe)">  
+        <ion-icon [color]="isFavorito(selectedRecipe) ? 'danger' : 'medium'" 
+                  [name]="isFavorito(selectedRecipe) ? 'heart' : 'heart-outline'">
+        </ion-icon>  
+      </ion-button>  
+    </ion-card-header>  
+    <ion-card-content>  
+      <img [src]="selectedRecipe.image" />  
+      <p>Ingredientes:</p>  
+      <ul>  
+        <li *ngFor="let ingredient of selectedRecipe.extendedIngredients">{{ ingredient.original }}</li>  
+      </ul>  
+      <p>{{ selectedRecipe.instructions }}</p>  
+      <a [href]="selectedRecipe.sourceUrl" target="_blank">Ver receta completa</a>  
+    </ion-card-content>  
+  </ion-card>  
+
+  <ion-button color="tertiary" (click)="signOut()">  
+    Log Out  
+  </ion-button>  
+</ion-content>
+

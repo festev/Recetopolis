@@ -1,0 +1,12 @@
+.d-flex-center {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  .auth-form {
+    width: 100%; /* O el ancho deseado */
+    max-width: 400px; /* Limitar el ancho máximo */
+    margin: 0 auto; /* Centrar el formulario */
+    padding: 16px; /* Espaciado interno */
+ 
+  }
