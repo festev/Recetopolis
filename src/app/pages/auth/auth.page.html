@@ -7,6 +7,7 @@
 
       <app-logo></app-logo>
 
+      <ion-text id="text_logo" color="primary"><h1>Nombre APP</h1></ion-text>
 
       <!--================ Email =================-->
 
@@ -28,7 +29,8 @@
         <div *ngIf="form.controls.password.errors?.['required']">La contraseña es requerida</div>
       </div>
 
-      <p routerLink="forgot-password" class="ion-text-end">¿Olvidaste tu contraseña?</p>
+      <p class="ion-text-end">¿Olvidaste tu contraseña?</p>
+      <!-- <p routerLink="forgot-password" class="ion-text-end">¿Olvidaste tu contraseña?</p> -->
 
       <ion-button expand="block" mode="ios" class="sudmit" type="submit" [disabled]="form.invalid">
         Ingresar

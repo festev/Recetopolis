@@ -15,8 +15,6 @@ export const environment ={
   production: true,
 
   firebaseConfig: {
-    production: false,
-
     apiKey: "AIzaSyDeGdMrABqcKYlte5sI3aS07GPRpPNSjY4",
     authDomain: "login-recetas.firebaseapp.com",
     projectId: "login-recetas",
