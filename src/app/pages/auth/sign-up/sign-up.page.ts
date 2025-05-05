@@ -30,14 +30,32 @@ export class SignUpPage implements OnInit {
       const loading = await this.utilsSvc.loading()
       await loading.present();
 
-      this.firebaseSvc.sihnUp(this.form.value as User).then(async res => {
+      this.firebaseSvc.signUp(this.form.value as User).then(async res => {
 
         await this.firebaseSvc.updateUser(this.form.value.name);
 
-        let uid = res.user.uid;
+        /*let uid = res.user.uid;
         this.form.controls.uid.setValue(uid);
 
-        this.setUserInfo(uid);
+        this.setUserInfo(uid);*/
+
+        const elUsuario = {
+          uid: res.user.uid,
+          email: res.user.email,
+          name: this.form.value.name
+        };
+
+        this.utilsSvc.saveInLocalStorage('user', elUsuario);
+        this.utilsSvc.routerLink('/main/home');
+        this.form.reset();
+
+        this.utilsSvc.presentToast({
+          message: `Te damos la bienvenida, ${elUsuario.name}`,
+          duration: 1500,
+          color: 'primary',
+          position:'middle',
+          icon: 'person-circle-outline'
+        })
 
 
       }).catch(error => {
@@ -58,6 +76,7 @@ export class SignUpPage implements OnInit {
     }
   }
 
+/*
   async setUserInfo(uid: string) {
     if (this.form.valid) {
 
@@ -91,4 +110,6 @@ export class SignUpPage implements OnInit {
       })
     }
   }
+*/
+
 }

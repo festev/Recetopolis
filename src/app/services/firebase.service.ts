@@ -12,13 +12,12 @@ import { UtilsService } from './utils.service';
 export class FirebaseService {
 
   auth = inject(AngularFireAuth);
-  firestore = inject(AngularFirestore);
+  //firestore = inject(AngularFirestore);
   utilsSvc = inject(UtilsService);
 
   //===================== Autenticación ======================
   getAuth(){
     return getAuth();
-
   }
 
 
@@ -28,7 +27,7 @@ export class FirebaseService {
   }
 
   //===================== Crear Usuario ======================
-  sihnUp(user: User) {
+  signUp(user: User) {
     return createUserWithEmailAndPassword(getAuth(), user.email, user.password)
   }
 

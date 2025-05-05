@@ -6,10 +6,10 @@ import { MainPage } from './pages/main/main.page';
 import { FavoritosPage } from './pages/main/favoritos/favoritos.page';
 
 const routes: Routes = [
- /* {
+  {
     path: '',
     loadChildren: () => import('./tabs/tabs.module').then(m => m.TabsPageModule)
-  },*/
+  },
   {
     path: '',
     redirectTo: 'auth',

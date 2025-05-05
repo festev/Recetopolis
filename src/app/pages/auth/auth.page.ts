@@ -30,7 +30,19 @@ export class AuthPage implements OnInit {
 
       this.firebaseSvc.signIn(this.form.value as User).then(res => {
 
-        this.getUserInfo(res.user.uid);
+        //this.getUserInfo(res.user.uid);
+        const elUsuario = { uid: res.user.uid, email: res.user.email };
+        this.utilsSvc.saveInLocalStorage('user', elUsuario);
+        this.utilsSvc.routerLink('/main/home');
+        this.form.reset();
+
+        this.utilsSvc.presentToast({
+          message: `Te damos la bienvenida, ${res.user.displayName}`,
+          duration:1500,
+          color: 'primary',
+          position:'middle',
+          icon: 'person-circle-outline'
+        })
 
       }).catch(error =>{
         console.log(error);
@@ -51,6 +63,7 @@ export class AuthPage implements OnInit {
   }
 
 
+/*
   async getUserInfo(uid: string) {
     if (this.form.valid) {
 
@@ -91,4 +104,6 @@ export class AuthPage implements OnInit {
       })
     }
   }
+*/
+
 }

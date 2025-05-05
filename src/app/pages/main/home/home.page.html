@@ -17,7 +17,8 @@
   </ion-item>  
   <ion-button color="primary" (click)="addIngredient()">Buscar Recetas</ion-button>  
   <ion-button color="danger" (click)="limpiarResultados()">Limpiar Resultados</ion-button>  
-  <ion-button color="tertiary" (click)="verFavoritos()">Ver Favoritos</ion-button> 
+  <!-- <ion-button color="tertiary" (click)="verFavoritos()">Ver Favoritos</ion-button> -->
+  <ion-button color="tertiary">Ver Favoritos</ion-button>
   
   <ion-list>  
     <ion-item class="hover-item" *ngFor="let recipe of recipes" (click)="getRecipeInfo(recipe.id)">  
