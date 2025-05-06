@@ -1,60 +1,150 @@
-<ion-header [translucent]="true">  
-  <meta name="mobile-web-app-capable" content="yes">  
-  <ion-toolbar>  
-    <ion-title>Busqueda de Recetas</ion-title>  
-    <ion-buttons slot="end">  
-      <ion-button>  
-        <span>{{ currentTime }}</span>  
-      </ion-button>  
-    </ion-buttons>  
-  </ion-toolbar>  
-</ion-header>  
+<ion-header [translucent]="true">
+  <meta name="mobile-web-app-capable" content="yes">
+  <ion-toolbar>
+    <ion-title>Búsqueda de Recetas</ion-title>
+    <ion-buttons slot="end">
+      <ion-button color="danger" (click)="signOut()">
+        <ion-icon name="log-out-outline" slot="start"></ion-icon>
+        Cerrar Sesión
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
 
-<ion-content>  
-  <ion-item>  
-    <ion-label position="floating">Agregar Ingredientes</ion-label>  
-    <ion-input [(ngModel)]="ingredientToAdd" placeholder="Ejemplo: carrots"></ion-input>  
-  </ion-item>  
-  <ion-button color="primary" (click)="addIngredient()">Buscar Recetas</ion-button>  
-  <ion-button color="danger" (click)="limpiarResultados()">Limpiar Resultados</ion-button>  
-  <!-- <ion-button color="tertiary" (click)="verFavoritos()">Ver Favoritos</ion-button> -->
-  <ion-button color="tertiary">Ver Favoritos</ion-button>
-  
-  <ion-list>  
-    <ion-item class="hover-item" *ngFor="let recipe of recipes" (click)="getRecipeInfo(recipe.id)">  
-      <ion-thumbnail slot="start">  
-        <img [src]="recipe.image">  
-      </ion-thumbnail>  
-      <ion-label>  
-        <h2>{{ recipe.title }}</h2>  
-      </ion-label>  
-        
-        
-    </ion-item>  
-  </ion-list>  
+<ion-content>
+  <div class="input-container">
+    <ion-label position="start">Agregar Ingredientes:</ion-label>
+    <ion-input [(ngModel)]="ingredientToAdd" placeholder="Ejemplo: zanahorias"></ion-input>
+  </div>
+  <div class="button-container">
+    <ion-button color="primary" (click)="addIngredient()">
+      <ion-icon name="search-outline" slot="start"></ion-icon>
+      Buscar Recetas
+    </ion-button>
+    <ion-button color="danger" (click)="limpiarResultados()">
+      <ion-icon name="trash-outline" slot="start"></ion-icon>
+      Limpiar Resultados
+    </ion-button>
+    <ion-button color="tertiary">
+      <ion-icon name="heart-outline" slot="start"></ion-icon>
+      Ver Favoritos
+    </ion-button>
+  </div>
 
-  <ion-card *ngIf="selectedRecipe">  
-    <ion-card-header>  
-      <ion-card-title>{{ selectedRecipe.title }}</ion-card-title>  
-      <ion-button fill="clear" (click)="toggleFavorito(selectedRecipe)">  
-        <ion-icon [color]="isFavorito(selectedRecipe) ? 'danger' : 'medium'" 
-                  [name]="isFavorito(selectedRecipe) ? 'heart' : 'heart-outline'">
-        </ion-icon>  
-      </ion-button>  
-    </ion-card-header>  
-    <ion-card-content>  
-      <img [src]="selectedRecipe.image" />  
-      <p>Ingredientes:</p>  
-      <ul>  
-        <li *ngFor="let ingredient of selectedRecipe.extendedIngredients">{{ ingredient.original }}</li>  
-      </ul>  
-      <p>{{ selectedRecipe.instructions }}</p>  
-      <a [href]="selectedRecipe.sourceUrl" target="_blank">Ver receta completa</a>  
-    </ion-card-content>  
-  </ion-card>  
+  <ion-list>
+    <ion-item class="hover-item" *ngFor="let recipe of recipes" (click)="getRecipeInfo(recipe.id)">
+      <ion-thumbnail slot="start">
+        <img [src]="recipe.image">
+      </ion-thumbnail>
+      <ion-label>
+        <h2>{{ recipe.title }}</h2>
+      </ion-label>
 
-  <ion-button color="tertiary" (click)="signOut()">  
-    Log Out  
-  </ion-button>  
+    </ion-item>
+  </ion-list>
+
+  <ion-card *ngIf="selectedRecipe">
+    <ion-card-header>
+      <ion-card-title>{{ selectedRecipe.title }}</ion-card-title>
+      <ion-button fill="clear" (click)="toggleFavorito(selectedRecipe)">
+        <ion-icon [color]="isFavorito(selectedRecipe) ? 'danger' : 'medium'"
+          [name]="isFavorito(selectedRecipe) ? 'heart' : 'heart-outline'">
+        </ion-icon>
+      </ion-button>
+    </ion-card-header>
+    <ion-card-content>
+      <img [src]="selectedRecipe.image" />
+      <p>Ingredientes:</p>
+      <ul>
+        <li *ngFor="let ingredient of selectedRecipe.extendedIngredients">{{ ingredient.original }}</li>
+      </ul>
+      <p>{{ selectedRecipe.instructions }}</p>
+      <a [href]="selectedRecipe.sourceUrl" target="_blank">Ver receta completa</a>
+    </ion-card-content>
+  </ion-card>
+
+
 </ion-content>
 
+<style>
+  .input-container {
+    display: flex;
+    align-items: center;
+    /* Alinea verticalmente la etiqueta y el input */
+    margin-bottom: 16px;
+    background-color: #000;
+    padding: 8px;
+    border-radius: 8px;
+    width: fit-content;
+    margin-left: auto;
+    margin-right: auto;
+    flex-direction: row;
+    /* Coloca la etiqueta y el input en fila */
+  }
+
+  .input-container ion-label {
+    margin-right: 8px;
+    color: white;
+    margin-bottom: 0;
+    /* Elimina el margen inferior de la etiqueta */
+  }
+
+  .input-container ion-input {
+    width: 300px;
+    /* Aumentamos el ancho del input */
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    padding: 8px;
+    background-color: #fff;
+    color: #000;
+  }
+
+  .button-container {
+    display: flex;
+    justify-content: center;
+    /* Centra los botones horizontalmente */
+    margin-top: 16px;
+    /* Espacio entre el input y los botones */
+  }
+
+  .button-container ion-button {
+    margin-right: 8px;
+    /* Espacio entre botones */
+  }
+
+  ion-content {
+    --background: url('/assets/images/fondo2.jpg') no-repeat center center / cover;
+  }
+
+  ion-card {
+    transition: transform 0.4s ease;
+
+    &:hover {
+      transform: scale(1.05);
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+    }
+  }
+
+  .hover-item {
+    transition: background-color 0.3s ease;
+    /* Efecto suave de transición */
+
+    &:hover {
+      background-color: var(--ion-color-light);
+      /* Color de fondo al pasar el mouse */
+      color: var(--ion-color-primary);
+      /* Color del texto al pasar el mouse */
+    }
+  }
+
+  ion-list {
+    background: transparent;
+    /* Eliminamos el fondo */
+    --ion-background-color: transparent;
+    /* Asegúramos de que Ionic no aplique un fondo por defecto */
+    backdrop-filter: blur(10px);
+    /* Aplicamos un efecto de desenfoque del fondo */
+    border-radius: 8px;
+    /* tratamos las esquinas redondeadas */
+  }
+</style>
