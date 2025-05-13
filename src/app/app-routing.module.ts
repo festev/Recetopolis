@@ -8,20 +8,16 @@ import { FavoritosPage } from './pages/main/favoritos/favoritos.page';
 const routes: Routes = [
   {
     path: '',
-    loadChildren: () => import('./tabs/tabs.module').then(m => m.TabsPageModule)
-  },
-  {
-    path: '',
     redirectTo: 'auth',
     pathMatch: 'full'
   },
   {
     path: 'auth',
-    loadChildren: () => import('./pages/auth/auth.module').then( m => m.AuthPageModule)//, canActivate:[NoAuthGuard]
+    loadChildren: () => import('./pages/auth/auth.module').then( m => m.AuthPageModule), canActivate:[NoAuthGuard]
   },
   {
     path: 'main',
-    loadChildren: () => import('./pages/main/main.module').then( m => m.MainPageModule)//, canActivate:[AuthGuard]
+    loadChildren: () => import('./pages/main/main.module').then( m => m.MainPageModule), canActivate:[AuthGuard]
   },
   { 
     path: 'favoritos', component: FavoritosPage 

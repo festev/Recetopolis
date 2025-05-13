@@ -20,13 +20,24 @@ export class AuthGuard implements CanActivate {
 
     return new Promise((resolve) => {
 
+      console.log("AuthGuard: activado");
+
       this.firebaseSvc.getAuth().onIdTokenChanged((auth) => {
-
         if (auth) {
-          if (user) resolve(true)
+          /*if (!user) {
+            const elUsuario = {
+              uid: auth.uid,
+              email: auth.email,
+              name: auth.displayName
+            };
+            this.utilsSvc.saveInLocalStorage('user', elUsuario);
+            console.log("AuthGuard: No se detectó 'user' en LocalStorage, guardando uno...", localStorage.getItem('user'));
+          }*/
+          console.log("AuthGuard: sesión activa")
+          resolve(true)
         }
-
         else {
+          console.log("AuthGuard: sin sesión. Redirigiendo...")
           this.utilsSvc.routerLink('/auth');
           resolve(false);
         }

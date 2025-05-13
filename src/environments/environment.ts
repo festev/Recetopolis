@@ -22,7 +22,7 @@ export const environment = {
     apiKey: "AIzaSyDeGdMrABqcKYlte5sI3aS07GPRpPNSjY4",
     authDomain: "login-recetas.firebaseapp.com",
     projectId: "login-recetas",
-    storageBucket: "login-recetas.firebasestorage.app",
+    storageBucket: "login-recetas.appspot.com",
     messagingSenderId: "1039122732812",
     appId: "1:1039122732812:web:9a4b0f9138bcd8f19a1b29",
     measurementId: "G-T5X8CD61WX"

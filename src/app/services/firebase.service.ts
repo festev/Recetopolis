@@ -42,9 +42,10 @@ export class FirebaseService {
   }
   //===================== Cerrar Sesión ======================
   signOut() {
-    getAuth().signOut();
-    localStorage.removeItem('user');
-    this.utilsSvc.routerLink('/auth');
+    getAuth().signOut().then(() => {
+      localStorage.removeItem('user');
+      //this.utilsSvc.routerLink('/auth');  //al parecer el AuthGuard detecta solo de que ya no hay sesión y redirige solo
+    });
   }
 
 

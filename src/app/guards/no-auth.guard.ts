@@ -18,11 +18,16 @@ export class NoAuthGuard implements CanActivate {
 
     return new Promise((resolve) => {
 
+      console.log("NoAuthGuard: activado");
+
       this.firebaseSvc.getAuth().onAuthStateChanged((auth) => {
 
-        if (!auth) resolve(true);
-
+        if (!auth){
+          console.log("NoAuthGuard: sin sesión");
+          resolve(true);
+        }
         else {
+          console.log("NoAuthGuard: sesión activa. Redirigiendo...");
           this.utilsSvc.routerLink('/main/home');
           resolve(false);
         }

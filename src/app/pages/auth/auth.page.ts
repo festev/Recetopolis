@@ -33,7 +33,7 @@ export class AuthPage implements OnInit {
         //this.getUserInfo(res.user.uid);
         const elUsuario = { uid: res.user.uid, email: res.user.email };
         this.utilsSvc.saveInLocalStorage('user', elUsuario);
-        this.utilsSvc.routerLink('/main/home');
+        //this.utilsSvc.routerLink('/main/home');
         this.form.reset();
 
         this.utilsSvc.presentToast({
