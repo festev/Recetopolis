@@ -1,5 +1,6 @@
+// src/app/pages/auth/auth.page.ts
 import { Component, inject, OnInit } from '@angular/core';
-import { FormControl, FormGroup, Validators } from '@angular/forms';
+import { FormControl, FormGroup, Validators } from '@angular/forms'; // Asegúrate que FormControl y FormGroup estén importados
 import { User } from 'src/app/models/user.model';
 import { FirebaseService } from 'src/app/services/firebase.service';
 import { UtilsService } from 'src/app/services/utils.service';
@@ -14,10 +15,15 @@ export class AuthPage implements OnInit {
   form = new FormGroup({
     email: new FormControl('', [Validators.required, Validators.email]),
     password: new FormControl('', [Validators.required])
-  })
+  });
 
   firebaseSvc = inject(FirebaseService);
-  utilsSvc = inject(UtilsService)
+  utilsSvc = inject(UtilsService);
+
+  constructor() {
+    // El constructor puede estar vacío si la inicialización principal se hace con 'inject'
+    // y la inicialización de 'form' se hace directamente en la declaración de la propiedad.
+  }
 
   ngOnInit() {
   }
@@ -25,47 +31,82 @@ export class AuthPage implements OnInit {
   async submit() {
     if (this.form.valid) {
 
-      const loading = await this.utilsSvc.loading()
+      const loading = await this.utilsSvc.loading();
       await loading.present();
 
       this.firebaseSvc.signIn(this.form.value as User).then(res => {
 
-        //this.getUserInfo(res.user.uid);
-        const elUsuario = { uid: res.user.uid, email: res.user.email };
+        //this.getUserInfo(res.user.uid); // Comentado como en tu código original
+        const elUsuario = { uid: res.user.uid, email: res.user.email, displayName: res.user.displayName }; // Añadido displayName para el saludo
         this.utilsSvc.saveInLocalStorage('user', elUsuario);
-        this.utilsSvc.routerLink('/main/home');
+        this.utilsSvc.routerLink('/main/home'); // Asegúrate que esta ruta sea la correcta post-login
         this.form.reset();
 
         this.utilsSvc.presentToast({
-          message: `Te damos la bienvenida, ${res.user.displayName}`,
-          duration:1500,
+          message: `Te damos la bienvenida ${elUsuario.displayName || 'Usuario'}`, // Usar displayName si existe
+          duration: 2000, // Ajustado para un mensaje de bienvenida
           color: 'primary',
-          position:'middle',
+          position: 'middle',
           icon: 'person-circle-outline'
-        })
+        });
 
-      }).catch(error =>{
+      }).catch(error => {
         console.log(error);
 
         this.utilsSvc.presentToast({
-          message: error.message,
-          duration:2500,
-          color: 'primary',
-          position:'middle',
+          message: this.firebaseErrorToString(error.code || error.message), // Función para traducir errores de Firebase
+          duration: 3000, // Un poco más de tiempo para mensajes de error
+          color: 'danger', // Color 'danger' para errores
+          position: 'middle',
           icon: 'alert-circle-outline'
-        })
+        });
 
-
-      }).finally(() =>{
+      }).finally(() => {
         loading.dismiss();
-      })
+      });
+    } else {
+      // Si el formulario no es válido, marca todos los controles como 'touched'
+      // para que los mensajes de error se muestren en la UI.
+      this.form.markAllAsTouched();
     }
   }
 
+  // Getters para acceder fácilmente a los controles del formulario en el template
+  get email() {
+    return this.form.get('email');
+  }
 
-/*
+  get password() {
+    return this.form.get('password');
+  }
+
+  // Función simple para traducir códigos de error comunes de Firebase a mensajes amigables
+  // Puedes expandir esto según necesites
+  firebaseErrorToString(errorCode: string): string {
+    switch (errorCode) {
+      case 'auth/invalid-email':
+        return 'El formato del correo electrónico no es válido.';
+      case 'auth/user-disabled':
+        return 'Este usuario ha sido deshabilitado.';
+      case 'auth/user-not-found':
+        return 'No se encontró ningún usuario con este correo electrónico.';
+      case 'auth/wrong-password':
+        return 'La contraseña es incorrecta.';
+      case 'auth/email-already-in-use':
+        return 'Este correo electrónico ya está en uso por otra cuenta.';
+      case 'auth/weak-password':
+        return 'La contraseña es demasiado débil.';
+      // Añade más casos según los errores que quieras manejar explícitamente
+      default:
+        return 'Ocurrió un error. Por favor, intenta de nuevo.'; // Mensaje genérico
+    }
+  }
+
+  /*
+  // Tu función getUserInfo original, comentada como la tenías.
+  // Si la necesitas, asegúrate de que la lógica y el manejo de errores sean consistentes.
   async getUserInfo(uid: string) {
-    if (this.form.valid) {
+    if (this.form.valid) { // Considera si esta validación de formulario es necesaria aquí
 
       const loading = await this.utilsSvc.loading()
       await loading.present();
@@ -79,31 +120,29 @@ export class AuthPage implements OnInit {
         this.form.reset();
 
         this.utilsSvc.presentToast({
-          message: `Te damos la bienvenida ${user.name}`,
+          message: `Te damos la bienvenida ${user.name}`, // Asumiendo que User tiene 'name'
           duration:1500,
           color: 'primary',
           position:'middle',
           icon: 'person-circle-outline'
         })
 
-
       }).catch(error =>{
         console.log(error);
 
         this.utilsSvc.presentToast({
-          message: error.message,
+          message: error.message, // Considera usar firebaseErrorToString aquí también
           duration:2500,
-          color: 'primary',
+          color: 'danger', // Color 'danger' para errores
           position:'middle',
           icon: 'alert-circle-outline'
         })
-
 
       }).finally(() =>{
         loading.dismiss();
       })
     }
   }
-*/
-
+  */
 }
+
