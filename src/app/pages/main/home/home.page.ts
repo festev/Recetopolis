@@ -1,4 +1,6 @@
-import { Component, OnInit, inject} from '@angular/core';
+// src/app/pages/main/home/home.page.ts
+import { Component, OnInit, OnDestroy, inject } from '@angular/core';
+import { DatePipe } from '@angular/common';
 import { FirebaseService } from 'src/app/services/firebase.service';
 import { UtilsService } from 'src/app/services/utils.service';
 import { RecipesService } from 'src/app/recipes.service';
@@ -8,99 +10,165 @@ import { Router } from '@angular/router';
   selector: 'app-home',
   templateUrl: './home.page.html',
   styleUrls: ['./home.page.scss'],
+  providers: [DatePipe]
 })
-export class HomePage implements OnInit {
+export class HomePage implements OnInit, OnDestroy {
 
   firebaseSvc = inject(FirebaseService);
   utilsSvc = inject(UtilsService);
-  ingredientToAdd: string = '';  
-  recipes: any[] = [];  
-  selectedRecipe: any = null;  
-  currentTime: string;
+
+  ingredientToAdd: string = '';
+  recipes: any[] = [];
+  selectedRecipe: any = null;
+
+  currentTime: string | null = '';
+  private timerInterval: any;
+
   items: string[];
-  favoritos: Set<{ id: number, sourceUrl: string }> = new Set();
+  favoritos: Set<{ id: number, sourceUrl: string, foto?: string }> = new Set();
 
-  constructor(private recipesService: RecipesService, private router: Router) {this.items = ['Elemento 1', 'Elemento 2', 'Elemento 3', 'Elemento 4', 'Elemento 5'];}  
-  
-  updateTime() {  
-    const now = new Date();  
-    this.currentTime = now.toLocaleTimeString(); // aca obtenemos la hora
+  constructor(
+    private recipesService: RecipesService,
+    private router: Router,
+    private datePipe: DatePipe
+  ) {
+    this.items = ['Elemento 1', 'Elemento 2', 'Elemento 3', 'Elemento 4', 'Elemento 5'];
   }
-
-  addIngredient() {  
-    if (!this.ingredientToAdd) {  
-      return;  
-    }  
-    this.recipesService.getRecipesByIngredients(this.ingredientToAdd, 5).subscribe(data => {  
-      this.recipes = data;  
-      this.selectedRecipe = null; // Reinicializa la receta seleccionada  
-    });  
-    this.ingredientToAdd = ''; // Limpiar el campo de entrada  
-  }  
-
-  getRecipeInfo(id: number) {  
-    this.recipesService.getRecipeInformation(id).subscribe(data => {  
-      this.selectedRecipe = data;  
-      //console.log(this.selectedRecipe);
-    });  
-  }  
-  
-  // =========== Limpia los resultados para realizar otra busqueda =======
-
-  limpiarResultados() {  
-    this.recipes = []; // Limpia la lista de recetas  
-    this.selectedRecipe = null; // Limpia la receta seleccionada  
-    this.ingredientToAdd = ''; // Limpia el campo de entrada  
-  }  
-
-  // =============== Hora del Sistema ============
 
   ngOnInit() {
-    this.updateTime();  
-    setInterval(() => {  
-      this.updateTime();  
-    }, 1000); 
-    this.loadFavoritos(); //Cargar los favoritos desde localStorage al iniciar
+    this.updateTime();
+    this.timerInterval = setInterval(() => {
+      this.updateTime();
+    }, 1000);
+    this.loadFavoritos();
   }
 
-  //============ Cerrar Sesión =============
-
-  signOut(){
-    this.firebaseSvc.signOut();
+  ngOnDestroy() {
+    if (this.timerInterval) {
+      clearInterval(this.timerInterval);
+    }
   }
 
-  // ============= Funciones de Favoritos =============  
-  
-  toggleFavorito(selectedRecipe: any) {  
-    const favorito = { id: selectedRecipe.id, sourceUrl: selectedRecipe.sourceUrl, foto: selectedRecipe.image }; // Crear objeto para favoritos  
-  
-    if (this.isFavorito(favorito)) {  
-        this.favoritos.delete(favorito); // Eliminar si ya es favorito  
-    } else {  
-        this.favoritos.add(favorito); // Añadir si no es favorito  
-    }  
-  
-    this.saveFavoritos();  
-}
-  // ============ Me permite seleccionar y borrar el favorito =================
-  isFavorito(recipe: { id: number; sourceUrl: string }): boolean {  
-    return Array.from(this.favoritos).some(favorito => favorito.id === recipe.id && favorito.sourceUrl === recipe.sourceUrl);  
-  }  
+  updateTime() {
+    const now = new Date();
+    // CORREGIDO: Formato del reloj a HH:mm (ej: 21:40)
+    this.currentTime = this.datePipe.transform(now, 'HH:mm');
+  }
 
-  saveFavoritos() {  
-    //const favoritosArray = Array.from(this.favoritos);  
-    //localStorage.setItem('favoritos', JSON.stringify(favoritosArray));  
+  addIngredient() {
+    if (!this.ingredientToAdd.trim()) {
+      this.utilsSvc.presentToast({ message: 'Por favor, ingresa un ingrediente.', duration: 2000, color: 'warning' });
+      return;
+    }
+    this.recipesService.getRecipesByIngredients(this.ingredientToAdd, 5).subscribe({
+      next: data => {
+        this.recipes = data;
+        this.selectedRecipe = null;
+        if (data.length === 0) {
+          this.utilsSvc.presentToast({ message: 'No se encontraron recetas para los ingredientes proporcionados.', duration: 3000, color: 'medium' });
+        }
+      },
+      error: err => {
+        console.error('Error al buscar recetas:', err);
+        this.utilsSvc.presentToast({ message: 'Error al buscar recetas. Inténtalo de nuevo.', duration: 3000, color: 'danger' });
+      }
+    });
+    this.ingredientToAdd = '';
+  }
+
+  getRecipeInfo(id: number) {
+    this.recipesService.getRecipeInformation(id).subscribe({
+      next: data => {
+        this.selectedRecipe = data;
+      },
+      error: err => {
+        console.error('Error al obtener información de la receta:', err);
+        this.utilsSvc.presentToast({ message: 'Error al obtener detalles de la receta.', duration: 3000, color: 'danger' });
+      }
+    });
+  }
+
+  limpiarResultados() {
+    this.recipes = [];
+    this.selectedRecipe = null;
+    this.ingredientToAdd = '';
+  }
+
+  async signOut() {
+    try {
+      await this.firebaseSvc.signOut();
+      console.log('Sesión cerrada exitosamente desde HomePage.');
+    } catch (error) {
+      console.error("Error al cerrar sesión desde HomePage:", error);
+      this.utilsSvc.presentToast({
+        message: 'Error al cerrar sesión. Inténtalo de nuevo.',
+        duration: 2500,
+        color: 'danger',
+        position: 'middle',
+        icon: 'alert-circle-outline'
+      });
+    }
+  }
+
+  toggleFavorito(selectedRecipe: any) {
+    let favoritoExistente = null;
+    for (const fav of this.favoritos) {
+      if (fav.id === selectedRecipe.id) {
+        favoritoExistente = fav;
+        break;
+      }
+    }
+
+    if (favoritoExistente) {
+      this.favoritos.delete(favoritoExistente);
+    } else {
+      if (selectedRecipe && typeof selectedRecipe.id !== 'undefined' && typeof selectedRecipe.sourceUrl !== 'undefined') {
+        this.favoritos.add({
+          id: selectedRecipe.id,
+          sourceUrl: selectedRecipe.sourceUrl,
+          foto: selectedRecipe.image
+        });
+      } else {
+        console.warn("No se pudo añadir a favoritos: datos de receta incompletos.", selectedRecipe);
+        this.utilsSvc.presentToast({ message: 'No se pudo añadir a favoritos, datos incompletos.', duration: 2000, color: 'warning' });
+        return;
+      }
+    }
+    this.saveFavoritos();
+  }
+
+  isFavorito(recipe: { id: number; sourceUrl?: string }): boolean {
+    if (typeof recipe.id === 'undefined') return false;
+    return Array.from(this.favoritos).some(favorito => favorito.id === recipe.id);
+  }
+
+  saveFavoritos() {
     localStorage.setItem('favoritos', JSON.stringify(Array.from(this.favoritos)));
-  }  
-  
-  loadFavoritos() {  
-    const favoritosStorage = localStorage.getItem('favoritos');  
-    if (favoritosStorage) {  
-      this.favoritos = new Set(JSON.parse(favoritosStorage));  
-    }  
-  }  
+  }
 
-  verFavoritos() {  
-    this.router.navigate(['/favoritos']); // Navega a la página de favoritos  
-  } 
+  loadFavoritos() {
+    const favoritosStorage = localStorage.getItem('favoritos');
+    if (favoritosStorage) {
+      try {
+        const parsedFavoritos = JSON.parse(favoritosStorage);
+        if (Array.isArray(parsedFavoritos)) {
+          this.favoritos = new Set(parsedFavoritos.map(fav => ({
+            id: fav.id,
+            sourceUrl: fav.sourceUrl,
+            foto: fav.foto
+          })));
+        } else {
+          this.favoritos = new Set();
+          console.warn("Favoritos en localStorage no era un array.");
+        }
+      } catch (e) {
+        console.error("Error al parsear favoritos de localStorage:", e);
+        this.favoritos = new Set();
+      }
+    }
+  }
+
+  verFavoritos() {
+    this.router.navigate(['/favoritos']);
+  }
 }

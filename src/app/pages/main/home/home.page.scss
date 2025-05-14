@@ -1,33 +1,145 @@
-ion-card {  
-    transition: transform 0.4s ease;  
-  
-    &:hover {  
-      transform: scale(1.05);  
-      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);  
-    }  
-  }  
+ion-toolbar.toolbar-with-center-clock.custom-black-toolbar {
+  position: relative; // Necesario para el posicionamiento absoluto del reloj
+  display: flex; // Ayuda a alinear el título y los botones
+  align-items: center;
+  padding: 0 8px; // Padding general para la toolbar
 
-.hover-item {  
-    transition: background-color 0.3s ease;     /* Efecto suave de transición */  
-  
-    &:hover {  
-      background-color: var(--ion-color-light);   /* Color de fondo al pasar el mouse */  
-      color: var(--ion-color-primary);           /* Color del texto al pasar el mouse */  
-    }  
-  }  
+  // Fondo negro para la toolbar
+  --background: #000000;
+  // Color de texto por defecto para la toolbar
+  color: #ffffff;
 
-  ion-content {  
-    --background: transparent;                          /* Hacemos el fondo del ion-content transparente */  
-  
-    background-image: url('/assets/images/fondo2.jpg'); /* Ruta de la imagen */  
-    background-size: cover;                             /* Asegura que cubra toda la pantalla */  
-    background-position: center;                        /* Centramos la imagen */  
-    background-repeat: no-repeat;                       /* Evitamos que la imagen se repita */  
-  }  
+  .toolbar-title-left-aligned {
+    flex: 1 1 auto; // El título ocupa el espacio disponible
+    text-align: left;
+    font-size: 1.1em;
+    padding-left: 8px; // Ajustado desde 16px para dar más espacio al centro
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    color: #ffffff; // Asegura texto blanco para el título
+  }
 
-  ion-list {  
-    background: transparent;                /* Eliminamos el fondo */  
-    --ion-background-color: transparent;    /* Asegúramos de que Ionic no aplique un fondo por defecto */  
-    backdrop-filter: blur(10px);            /* Aplicamos un efecto de desenfoque del fondo */  
-    border-radius: 8px;                     /* tratamos las esquinas redondeadas */  
-  }  
+  .digital-clock-centered {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 1.1em;
+    font-weight: 500;
+    white-space: nowrap;
+    color: #ffffff; // Asegura texto blanco para la hora
+
+    .clock-label {
+      // Estilos opcionales para la etiqueta "Hora actual:"
+      // font-weight: normal;
+      // margin-right: 5px;
+      color: #ffffff; // Asegura texto blanco para la etiqueta
+    }
+  }
+
+  // Estilos para el botón de cerrar sesión
+  .logout-button-style {
+    font-size: 0.85em;
+    text-transform: uppercase;
+    // Asegura que el texto y el icono del botón sean blancos
+    --color: #ffffff;
+    --color-activated: #cccccc; // Color cuando el botón está presionado (un gris claro)
+    --color-hover: #dddddd; // Color al pasar el mouse (si es aplicable)
+  }
+}
+
+// === Tus estilos existentes para el contenido de la página ===
+// (Estos son los estilos que estaban en el bloque <style> de tu HTML)
+
+.input-container {
+  display: flex;
+  align-items: center;
+  margin-top: 16px; // Añadido margen superior para separarlo del header
+  margin-bottom: 16px;
+  background-color: rgba(0, 0, 0, 0.7); // Usar rgba para transparencia
+  padding: 10px 15px;
+  border-radius: 8px;
+  width: fit-content; // Se ajusta al contenido
+  margin-left: auto;
+  margin-right: auto;
+  flex-direction: row;
+}
+
+.input-container ion-label {
+  margin-right: 10px;
+  color: white;
+  margin-bottom: 0;
+  font-size: 0.9em;
+}
+
+.input-container ion-input {
+  flex-grow: 1; // Permite que el input crezca si hay espacio
+  min-width: 200px; // Ancho mínimo para el input
+  // width: 300px; // Puedes descomentar si prefieres un ancho fijo
+  border: 1px solid #555; // Borde un poco más oscuro para contraste
+  border-radius: 4px;
+  // padding: 8px; // Ionic inputs manejan su padding interno con variables CSS
+  --background: #fff; // Fondo blanco para el input
+  --color: #000; // Color de texto negro para el input
+  --padding-start: 10px;
+  --padding-end: 10px;
+  height: 40px; // Altura fija para el input
+}
+
+.button-container {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap; // Permite que los botones se ajusten en pantallas pequeñas
+  gap: 10px; // Espacio uniforme entre botones
+  margin-top: 16px;
+  margin-bottom: 20px;
+  padding: 0 10px; // Padding horizontal para que los botones no toquen los bordes
+}
+
+.button-container ion-button {
+  // margin-right: 8px; // Ya no es necesario gracias a 'gap'
+  flex-grow: 1; // Permite que los botones crezcan para llenar el espacio
+  max-width: 220px; // Ancho máximo por botón, ajusta según necesites
+}
+
+ion-content {
+  --background: url('/assets/images/fondo2.jpg') no-repeat center center / cover;
+}
+
+ion-card {
+  transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+  margin-left: auto;
+  margin-right: auto;
+  max-width: 600px; // Ancho máximo para la tarjeta de detalles
+
+  &:hover {
+    transform: translateY(-5px) scale(1.02);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+  }
+}
+
+.hover-item {
+  transition: background-color 0.2s ease-out;
+  --background-hover: var(--ion-color-light-tint);
+  // CORREGIDO: Se añade la propiedad cursor para cambiar el icono del mouse
+  cursor: pointer; // Esto cambiará el cursor a una mano/puntero
+
+  &:hover {
+    background-color: var(--background-hover);
+
+    h2 {
+      color: var(--ion-color-primary); // Cambia el color del título en hover si lo deseas
+    }
+  }
+}
+
+ion-list {
+  background: rgba(255, 255, 255, 0.1); // Fondo blanco muy sutil y transparente
+  --ion-background-color: transparent; // Asegura que Ionic no aplique un fondo
+  backdrop-filter: blur(8px); // Efecto de desenfoque
+  border-radius: 12px; // Esquinas redondeadas
+  margin: 10px 16px; // Margen alrededor de la lista (ajustado para más espacio lateral)
+  padding: 5px 0; // Padding vertical interno
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); // Sombra sutil
+}

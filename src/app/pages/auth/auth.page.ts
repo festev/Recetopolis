@@ -12,8 +12,14 @@ import { UtilsService } from 'src/app/services/utils.service';
 })
 export class AuthPage implements OnInit {
 
+  private emailPattern: string = "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$";
+
   form = new FormGroup({
-    email: new FormControl('', [Validators.required, Validators.email]),
+    email: new FormControl('', [
+      Validators.required,
+      Validators.email,
+      Validators.pattern(this.emailPattern)]),
+
     password: new FormControl('', [Validators.required])
   });
 
@@ -21,8 +27,7 @@ export class AuthPage implements OnInit {
   utilsSvc = inject(UtilsService);
 
   constructor() {
-    // El constructor puede estar vacío si la inicialización principal se hace con 'inject'
-    // y la inicialización de 'form' se hace directamente en la declaración de la propiedad.
+
   }
 
   ngOnInit() {
@@ -36,8 +41,8 @@ export class AuthPage implements OnInit {
 
       this.firebaseSvc.signIn(this.form.value as User).then(res => {
 
-        //this.getUserInfo(res.user.uid); // Comentado como en tu código original
-        const elUsuario = { uid: res.user.uid, email: res.user.email, displayName: res.user.displayName }; // Añadido displayName para el saludo
+
+        const elUsuario = { uid: res.user.uid, email: res.user.email, displayName: res.user.displayName };
         this.utilsSvc.saveInLocalStorage('user', elUsuario);
         this.utilsSvc.routerLink('/main/home'); // Asegúrate que esta ruta sea la correcta post-login
         this.form.reset();
@@ -79,9 +84,7 @@ export class AuthPage implements OnInit {
   get password() {
     return this.form.get('password');
   }
-
-  // Función simple para traducir códigos de error comunes de Firebase a mensajes amigables
-  // Puedes expandir esto según necesites
+  // Función para traducir errores de Firebase a mensajes amigables
   firebaseErrorToString(errorCode: string): string {
     switch (errorCode) {
       case 'auth/invalid-email':
@@ -96,7 +99,7 @@ export class AuthPage implements OnInit {
         return 'Este correo electrónico ya está en uso por otra cuenta.';
       case 'auth/weak-password':
         return 'La contraseña es demasiado débil.';
-      // Añade más casos según los errores que quieras manejar explícitamente
+
       default:
         return 'Ocurrió un error. Por favor, intenta de nuevo.'; // Mensaje genérico
     }
