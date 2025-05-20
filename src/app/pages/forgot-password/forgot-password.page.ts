@@ -1,8 +1,7 @@
-// src/app/pages/forgot-password/forgot-password.page.ts
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { AlertController, LoadingController, ToastController } from '@ionic/angular';
-// import { AuthService } from '../../services/auth.service'; // Asumiendo que tienes un servicio de autenticación
+import { FirebaseService } from '../../services/firebase.service'; // Asegúrate que la ruta sea correcta
 
 @Component({
   selector: 'app-forgot-password',
@@ -16,8 +15,8 @@ export class ForgotPasswordPage implements OnInit {
     private router: Router,
     private alertController: AlertController,
     private loadingController: LoadingController,
-    private toastController: ToastController
-    // private authService: AuthService // Descomenta si tienes un servicio
+    private toastController: ToastController,
+    private firebaseService: FirebaseService
   ) { }
 
   ngOnInit() { }
@@ -28,48 +27,60 @@ export class ForgotPasswordPage implements OnInit {
       return;
     }
 
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(this.email)) {
+      this.presentToast('Por favor, ingresa un correo electrónico válido.', 'warning');
+      return;
+    }
+
     const loading = await this.loadingController.create({
       message: 'Procesando...',
     });
     await loading.present();
 
     try {
-      // --- INICIO: LÓGICA DE BACKEND (EJEMPLO/SIMULACIÓN) ---
-      // Aquí llamarías a tu servicio de backend.
-      // Por ejemplo: await this.authService.requestPasswordReset(this.email);
-
-      // Simulación de llamada a backend:
-      await new Promise(resolve => setTimeout(resolve, 2000)); // Simula demora de red
-      console.log('Solicitud de restablecimiento de contraseña para:', this.email);
-      // En un caso real, el backend enviaría el correo.
-      // --- FIN: LÓGICA DE BACKEND ---
-
+      await this.firebaseService.sendRecoveryEmail(this.email);
       await loading.dismiss();
-      this.presentAlert(
-        'Correo Enviado',
-        'Si tu correo está registrado, recibirás un enlace para restablecer tu contraseña en breve.'
-      );
-      this.router.navigate(['/auth']); // Redirige de vuelta al login o a donde prefieras
+
+      // Creamos la alerta directamente aquí para añadir el handler de navegación
+      const alert = await this.alertController.create({
+        header: 'Correo Enviado',
+        message: 'Si tu correo electrónico está registrado en nuestro sistema, recibirás un enlace para restablecer tu contraseña en breve. Por favor, revisa tu bandeja de entrada (y la carpeta de spam).',
+        buttons: [
+          {
+            text: 'OK',
+            handler: () => {
+              // Navegar a /auth DESPUÉS de que el usuario presione OK
+              this.router.navigate(['/auth']);
+            }
+          }
+        ]
+      });
+      await alert.present();
+
     } catch (error: any) {
       await loading.dismiss();
       console.error('Error en la solicitud de restablecimiento:', error);
-      let errorMessage = 'Ocurrió un error. Por favor, intenta de nuevo.';
-      if (error && error.message) { // Personaliza según la respuesta de tu backend
-        errorMessage = error.message;
-      }
-      this.presentAlert('Error', errorMessage);
+
+      // Mostramos mensaje genérico y permitimos navegar también
+      const alert = await this.alertController.create({
+        header: 'Información',
+        message: 'Si tu correo electrónico está registrado en nuestro sistema, recibirás un enlace para restablecer tu contraseña en breve. Por favor, revisa tu bandeja de entrada (y la carpeta de spam). Aunque haya ocurrido un error interno, es posible que Firebase haya procesado la solicitud si el correo es válido.',
+        buttons: [
+          {
+            text: 'OK',
+            handler: () => {
+              // Navegar a /auth DESPUÉS de que el usuario presione OK
+              this.router.navigate(['/auth']);
+            }
+          }
+        ]
+      });
+      await alert.present();
     }
   }
 
-  async presentAlert(header: string, message: string) {
-    const alert = await this.alertController.create({
-      header,
-      message,
-      buttons: ['OK'],
-    });
-    await alert.present();
-  }
-
+  // El método presentToast sigue siendo útil
   async presentToast(message: string, color: string = 'danger') {
     const toast = await this.toastController.create({
       message,
@@ -79,4 +90,16 @@ export class ForgotPasswordPage implements OnInit {
     });
     toast.present();
   }
+
+  // El método presentAlert original podría no ser necesario para este flujo específico
+  // si todas las alertas de submit ahora tienen navegación, pero puedes conservarlo
+  // por si lo usas en otros contextos donde no necesitas un handler de navegación.
+  // async presentAlert(header: string, message: string) {
+  //   const alert = await this.alertController.create({
+  //     header,
+  //     message,
+  //     buttons: ['OK'],
+  //   });
+  //   await alert.present();
+  // }
 }
