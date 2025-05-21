@@ -1,20 +1,33 @@
 <ion-header>
   <ion-toolbar>
     <ion-buttons slot="start">
-      <ion-back-button defaultHref="./pages/main/home"></ion-back-button>
+      <ion-back-button defaultHref="/main/home"></ion-back-button>
     </ion-buttons>
     <ion-title>Editar Perfil</ion-title>
   </ion-toolbar>
 </ion-header>
 
 <ion-content class="ion-padding">
-  <div *ngIf="currentUser"> <ion-list lines="full">
+  <div *ngIf="currentUser">
+    <ion-list lines="full">
       <ion-item>
         <ion-label position="stacked">Nombre para mostrar</ion-label>
         <ion-input type="text" [(ngModel)]="displayName" placeholder="Tu nombre" name="displayNameInput" required>
         </ion-input>
       </ion-item>
 
+      <ion-item>
+        <ion-label position="stacked">Biografía</ion-label>
+        <ion-textarea [(ngModel)]="bio" placeholder="Cuéntanos un poco sobre ti..." name="bioInput" rows="4"
+          autoGrow="true">
+        </ion-textarea>
+      </ion-item>
+
+      <ion-item>
+        <ion-label position="stacked">Número de teléfono</ion-label>
+        <ion-input type="tel" [(ngModel)]="phoneNumber" placeholder="Ej: +54 9 11 12345678" name="phoneInput">
+        </ion-input>
+      </ion-item>
       <ion-item lines="none">
         <ion-label>
           <p><strong>Email:</strong> {{ currentUser.email }}</p>
@@ -23,8 +36,7 @@
       </ion-item>
     </ion-list>
 
-    <ion-button expand="block" (click)="saveProfile()"
-      [disabled]="!displayName || displayName.trim() === '' || (currentUser && displayName.trim() === currentUser.displayName)"
+    <ion-button expand="block" (click)="saveProfile()" [disabled]="!displayName || displayName.trim() === ''"
       class="ion-margin-top">
       Guardar Cambios
     </ion-button>
@@ -34,5 +46,4 @@
     <p>Cargando información del perfil...</p>
     <ion-spinner name="crescent"></ion-spinner>
   </div>
-
 </ion-content>

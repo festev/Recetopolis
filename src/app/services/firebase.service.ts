@@ -59,12 +59,13 @@ export class FirebaseService {
   //===================== Base de Datos ======================
 
   //===================== Setear un documento ======================
-  setDocument(path: string, data: any) {
-    return setDoc(doc(getFirestore(), path), data);
+  setDocument(path: string, data: any, mergeFields: boolean = false) { // Añadido parámetro mergeFields
+    return setDoc(doc(getFirestore(), path), data, { merge: mergeFields }); // Usar la opción merge
   }
 
   //===================== Obtener un documento ======================
   async getDocument(path: string) {
     return (await getDoc(doc(getFirestore(), path))).data();
   }
+
 }
