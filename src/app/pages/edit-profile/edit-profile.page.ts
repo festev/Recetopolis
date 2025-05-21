@@ -1,13 +1,13 @@
 import { Component, OnInit, inject } from '@angular/core';
-import { FirebaseService } from 'src/app/services/firebase.service'; // Ajusta la ruta si es diferente
-import { UtilsService } from 'src/app/services/utils.service';   // Ajusta la ruta si es diferente
-import { User } from 'firebase/auth'; // Importa el tipo User de Firebase
-// Importa GeoPoint si decides usarlo para la ubicación más adelante
-// import { GeoPoint } from 'firebase/firestore';
+import { FirebaseService } from 'src/app/services/firebase.service';
+import { UtilsService } from 'src/app/services/utils.service';
+import { User } from 'firebase/auth';
+import { Geolocation, Position } from '@capacitor/geolocation';
+import { GeoPoint } from 'firebase/firestore'; // Asegúrate que esta importación esté
 
 
 @Component({
-  selector: 'app-edit-profile',
+  selector: 'app-edit-profile', // CORREGIDO: Quitar './' del selector
   templateUrl: './edit-profile.page.html',
   styleUrls: ['./edit-profile.page.scss'],
 })
@@ -40,14 +40,17 @@ export class EditProfilePage implements OnInit {
         if (userData) {
           this.bio = userData['bio'] || '';
           this.phoneNumber = userData['phoneNumber'] || '';
-          // Carga aquí otros campos que tengas en Firestore (ej. userData['location'])
+          const firestoreLocation = userData['location'];
+          if (firestoreLocation && typeof firestoreLocation.latitude === 'number' && typeof firestoreLocation.longitude === 'number') {
+            this.location = {
+              latitude: firestoreLocation.latitude,
+              longitude: firestoreLocation.longitude
+            };
+          }
         }
-
       } catch (error) {
         console.error("Error cargando datos del perfil desde Firestore:", error);
-        // No necesitas mostrar un toast aquí necesariamente, puede que el documento no exista aún
       }
-
     } else {
       console.warn('Usuario no encontrado al cargar el perfil.');
       this.utilsSvc.presentToast({
@@ -58,14 +61,12 @@ export class EditProfilePage implements OnInit {
     }
   }
 
-
   async saveProfile() {
     if (!this.currentUser) {
       this.utilsSvc.presentToast({ message: 'Error: Usuario no autenticado.', color: 'danger' });
       return;
     }
 
-    // Validar que el displayName no esté vacío (puedes añadir más validaciones)
     if (!this.displayName || this.displayName.trim() === '') {
       this.utilsSvc.presentToast({ message: 'El nombre no puede estar vacío.', color: 'warning' });
       return;
@@ -75,31 +76,42 @@ export class EditProfilePage implements OnInit {
     await loading.present();
 
     try {
-      // Llama a un método en tu FirebaseService para actualizar el perfil
-      // Este método debería usar updateProfile de Firebase Auth
       // 1. Actualizar perfil de Autenticación (displayName)
       await this.firebaseSvc.updateUser(this.displayName.trim());
 
       // 2. Preparar datos para Firestore
-      const userProfileData = {
-        displayName: this.displayName.trim(), // Es bueno guardar el displayName aquí también por consistencia
+      // === CORRECCIÓN AQUÍ: Definir el tipo para userProfileData ===
+      const userProfileData: {
+        displayName: string;
+        bio: string;
+        phoneNumber: string;
+        email: string | null | undefined; // email puede ser null o undefined desde currentUser
+        location?: GeoPoint | null; // Hacer 'location' opcional y permitir null
+      } = {
+        displayName: this.displayName.trim(),
         bio: this.bio.trim(),
         phoneNumber: this.phoneNumber.trim(),
-        email: this.currentUser.email // Guardar email como referencia, aunque no se edite
-        // Añade aquí otros campos que quieras guardar en Firestore
+        email: this.currentUser?.email, // Usar optional chaining es bueno aquí
+        // No inicializamos 'location' aquí, se añadirá condicionalmente
       };
+      // =============================================================
 
-      // Si tenemos datos de ubicación, los añadimos (lo veremos en Etapa 2)
-      // if (this.location && this.location.latitude && this.location.longitude) {
-      //   userProfileData.location = new GeoPoint(this.location.latitude, this.location.longitude);
-      // }
+      if (this.location && typeof this.location.latitude === 'number' && typeof this.location.longitude === 'number') {
+        userProfileData.location = new GeoPoint(this.location.latitude, this.location.longitude);
+      } else {
+        // Si quieres explícitamente enviar 'null' para borrar la ubicación en Firestore,
+        // o si quieres asegurarte de que el campo 'location' exista en el objeto incluso si es null:
+        // userProfileData.location = null;
+        // Si no haces nada aquí y this.location no cumple la condición,
+        // la propiedad 'location' no se enviará en el objeto userProfileData (a menos que la inicialices arriba).
+        // Con { merge: true } en setDocument, si 'location' no está en userProfileData,
+        // el campo 'location' en Firestore no se modificará.
+        // Si envías userProfileData.location = null con {merge: true}, el campo en Firestore se establecerá a null.
+      }
 
       // 3. Guardar/Actualizar datos en Firestore (usando merge)
-      const userDocPath = `users/${this.currentUser.uid}`;
-      await this.firebaseSvc.setDocument(userDocPath, userProfileData, true); // true para mergeFields
-      // Si creaste updateUserDocument: await this.firebaseSvc.updateUserDocument(this.currentUser.uid, userProfileData);
-
-      // 4. Actualizar el objeto currentUser localmente si es necesario
+      const userDocPath = `users/${this.currentUser.uid}`; // Ya verificamos que currentUser no es null
+      await this.firebaseSvc.setDocument(userDocPath, userProfileData, true);
 
       this.utilsSvc.presentToast({
         message: 'Perfil actualizado exitosamente.',
@@ -114,10 +126,34 @@ export class EditProfilePage implements OnInit {
         duration: 3000
       });
     } finally {
-      await loading.dismiss(); // Oculta el indicador de carga
+      await loading.dismiss();
     }
   }
-  // La función para obtener ubicación irá aquí en la Etapa 2
-  // async getCurrentLocation() { /* ... */ }
 
+  async getCurrentLocation() {
+    this.isFetchingLocation = true;
+    try {
+      const coordinates = await Geolocation.getCurrentPosition({
+        enableHighAccuracy: true,
+        timeout: 10000
+      });
+      this.location = {
+        latitude: coordinates.coords.latitude,
+        longitude: coordinates.coords.longitude,
+      };
+      this.utilsSvc.presentToast({ message: 'Ubicación obtenida.', color: 'success', duration: 1500 });
+    } catch (error: any) {
+      console.error('Error obteniendo la ubicación:', error);
+      let errorMessage = 'No se pudo obtener la ubicación.';
+      if (error.message && error.message.toLowerCase().includes('permission denied')) {
+        errorMessage = 'Permiso de ubicación denegado. Por favor, habilítalo en los ajustes.';
+      } else if (error.message && error.message.toLowerCase().includes('location unavailable')) {
+        errorMessage = 'Ubicación no disponible en este momento.';
+      }
+      this.utilsSvc.presentToast({ message: errorMessage, color: 'danger', duration: 3000 });
+      this.location = null;
+    } finally {
+      this.isFetchingLocation = false;
+    }
+  }
 }
