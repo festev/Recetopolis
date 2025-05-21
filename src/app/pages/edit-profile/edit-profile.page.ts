@@ -216,6 +216,7 @@ export class EditProfilePage implements OnInit {
   }
 
   async takePicture(source: CameraSource) {
+    console.log('takePicture llamada con source:', source);
     try {
       const image = await Camera.getPhoto({
         quality: 90,
