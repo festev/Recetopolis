@@ -1,6 +1,8 @@
 <ion-header [translucent]="true">
-  <ion-toolbar class="toolbar-with-center-clock custom-black-toolbar"> <ion-title
-      class="toolbar-title-left-aligned">Búsqueda de Recetas</ion-title>
+  <ion-toolbar class="toolbar-with-center-clock custom-black-toolbar">
+
+    <ion-title class="toolbar-title-left-aligned">Búsqueda de Recetas
+    </ion-title>
 
     <div class="digital-clock-centered" *ngIf="currentTime">
       <span class="clock-label">Hora actual: </span>{{ currentTime }}
@@ -16,6 +18,9 @@
 </ion-header>
 
 <ion-content>
+  <ion-button id="profile-icon-button" fill="clear" (click)="onProfileClick()">
+    <ion-icon slot="icon-only" name="person-circle-outline" aria-label="Perfil"></ion-icon>
+  </ion-button>
   <div class="input-container">
     <ion-label position="start">Agregar Ingredientes:</ion-label>
     <ion-input [(ngModel)]="ingredientToAdd" placeholder="Ejemplo: zanahorias"></ion-input>

@@ -47,6 +47,34 @@ ion-toolbar.toolbar-with-center-clock.custom-black-toolbar {
     --color-activated: #cccccc; // Color cuando el botón está presionado (un gris claro)
     --color-hover: #dddddd; // Color al pasar el mouse (si es aplicable)
   }
+
+
+}
+
+#profile-icon-button {
+  position: absolute;
+  top: 16px;
+  left: 16px;
+  z-index: 999;
+
+  ion-icon {
+    font-size: 48px; // ----> AUMENTA ESTE VALOR para hacerlo más grande (ej. 40px, 48px, etc.)
+    color: #000000; // ----> CAMBIA ESTE VALOR a negro
+    // Si el negro puro es muy fuerte, puedes probar un gris oscuro:
+    // color: #333333;
+  }
+
+  // Opcional: Si al agrandar mucho el ícono, el área de clic del botón se siente pequeña,
+  // puedes definir un tamaño explícito para el botón y centrar el ícono.
+  // Si el ícono es de 48px, el botón podría ser un poco más grande:
+  /*
+  width: 56px;
+  height: 56px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  --border-radius: 50%; // Para que el botón siga siendo redondo si defines width y height
+  */
 }
 
 // === Tus estilos existentes para el contenido de la página ===
