@@ -1,8 +1,6 @@
+// src/app/app-routing.module.ts
 import { NgModule } from '@angular/core';
 import { PreloadAllModules, RouterModule, Routes } from '@angular/router';
-import { NoAuthGuard } from './guards/no-auth.guard';
-import { AuthGuard } from './guards/auth.guard';
-import { MainPage } from './pages/main/main.page';
 import { FavoritosPage } from './pages/main/favoritos/favoritos.page';
 
 const routes: Routes = [
@@ -19,14 +17,26 @@ const routes: Routes = [
     path: 'main',
     loadChildren: () => import('./pages/main/main.module').then( m => m.MainPageModule), canActivate:[AuthGuard]
   },
-  { 
-    path: 'favoritos', component: FavoritosPage 
+  {
+    path: 'favoritos',
+    component: FavoritosPage
+  },
+  // NUEVAS RUTAS:
+  {
+    path: 'forgot-password',
+    loadChildren: () => import('./pages/forgot-password/forgot-password.module').then(m => m.ForgotPasswordPageModule)
+  },
+  {
+    path: 'reset-password/:token', // La ruta para restablecer contraseña espera un parámetro 'token'
+    loadChildren: () => import('./pages/reset-password/reset-password.module').then(m => m.ResetPasswordPageModule)
   },
 ];
+
 @NgModule({
   imports: [
     RouterModule.forRoot(routes, { preloadingStrategy: PreloadAllModules })
   ],
   exports: [RouterModule]
 })
-export class AppRoutingModule {}
+export class AppRoutingModule { }
+
