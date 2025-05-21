@@ -1,21 +1,38 @@
-<ion-header [translucent]="true">
+<ion-header>
   <ion-toolbar>
     <ion-buttons slot="start">
-      <ion-back-button defaultHref="/home"></ion-back-button>
+      <ion-back-button defaultHref="./pages/main/home"></ion-back-button>
     </ion-buttons>
     <ion-title>Editar Perfil</ion-title>
   </ion-toolbar>
 </ion-header>
 
-<ion-content [fullscreen]="true" class="ion-padding">
-  <ion-header collapse="condense">
-    <ion-toolbar>
-      <ion-title size="large">Editar Perfil</ion-title>
-    </ion-toolbar>
-  </ion-header>
+<ion-content class="ion-padding">
+  <div *ngIf="currentUser"> <ion-list lines="full">
+      <ion-item>
+        <ion-label position="stacked">Nombre para mostrar</ion-label>
+        <ion-input type="text" [(ngModel)]="displayName" placeholder="Tu nombre" name="displayNameInput" required>
+        </ion-input>
+      </ion-item>
 
-  <h2>Página de Edición de Perfil</h2>
-  <p>Aquí podrás editar los datos de tu usuario.</p>
-  <p>Más contenido y funcionalidades vendrán aquí en el futuro.</p>
+      <ion-item lines="none">
+        <ion-label>
+          <p><strong>Email:</strong> {{ currentUser.email }}</p>
+          <p><small>(El email no se puede cambiar desde aquí)</small></p>
+        </ion-label>
+      </ion-item>
+    </ion-list>
+
+    <ion-button expand="block" (click)="saveProfile()"
+      [disabled]="!displayName || displayName.trim() === '' || (currentUser && displayName.trim() === currentUser.displayName)"
+      class="ion-margin-top">
+      Guardar Cambios
+    </ion-button>
+  </div>
+
+  <div *ngIf="!currentUser" class="ion-text-center ion-padding">
+    <p>Cargando información del perfil...</p>
+    <ion-spinner name="crescent"></ion-spinner>
+  </div>
 
 </ion-content>
