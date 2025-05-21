@@ -14,13 +14,18 @@ import { GeoPoint } from 'firebase/firestore'; // Asegúrate que esta importaci�
 export class EditProfilePage implements OnInit {
   firebaseSvc = inject(FirebaseService);
   utilsSvc = inject(UtilsService);
+
   currentUser: User | null = null;
   displayName: string = '';
   bio: string = '';
   phoneNumber: string = '';
-
   location: { latitude?: number, longitude?: number } | null = null;
   isFetchingLocation = false;
+
+
+  mapImageUrl: string | null = null;
+  private googleMapsApiKey: string = 'AIzaSyCeonSSeyfThckKZChFdHtK-rkDagNu4PQ';
+
 
   constructor() { }
 
@@ -46,6 +51,7 @@ export class EditProfilePage implements OnInit {
               latitude: firestoreLocation.latitude,
               longitude: firestoreLocation.longitude
             };
+            this.updateMapImageUrl();
           }
         }
       } catch (error) {
@@ -59,6 +65,27 @@ export class EditProfilePage implements OnInit {
         duration: 3000
       });
     }
+  }
+  updateMapImageUrl() {
+    if (this.location && typeof this.location.latitude === 'number' && typeof this.location.longitude === 'number') {
+
+      if (!this.googleMapsApiKey || this.googleMapsApiKey === 'TU_CLAVE_API_DE_Maps_AQUI' || this.googleMapsApiKey === 'TU_CLAVE_API_DE_Maps_AQUI') {
+        console.warn('Clave API de Google Maps no configurada para mostrar el mapa.');
+        this.mapImageUrl = null;
+        return;
+      }
+      const lat = this.location.latitude;
+      const lng = this.location.longitude;
+      const zoom = 15;
+      const width = 600; // Ancho de la imagen del mapa (puedes ajustarlo)
+      const height = 300; // Alto de la imagen del mapa
+
+      this.mapImageUrl = `https://maps.googleapis.com/maps/api/staticmap?center=${lat},${lng}&zoom=${zoom}&size=${width}x${height}&maptype=roadmap&markers=color:red%7C${lat},${lng}&key=${this.googleMapsApiKey}`;
+
+    } else {
+      this.mapImageUrl = null;
+    }
+    console.log('Generated mapImageUrl:', this.mapImageUrl);
   }
 
   async saveProfile() {
@@ -119,7 +146,7 @@ export class EditProfilePage implements OnInit {
         duration: 2000
       });
     } catch (error: any) {
-      console.error('Error al actualizar el perfil:', error);
+      console.error('saveProfile: Error al actualizar el perfil:', error);
       this.utilsSvc.presentToast({
         message: `Error: ${error.message || 'No se pudo actualizar el perfil.'}`,
         color: 'danger',
@@ -132,6 +159,7 @@ export class EditProfilePage implements OnInit {
 
   async getCurrentLocation() {
     this.isFetchingLocation = true;
+    this.mapImageUrl = null;
     try {
       const coordinates = await Geolocation.getCurrentPosition({
         enableHighAccuracy: true,
@@ -141,19 +169,36 @@ export class EditProfilePage implements OnInit {
         latitude: coordinates.coords.latitude,
         longitude: coordinates.coords.longitude,
       };
+
+      console.log('Location from GPS:', this.location);
+
+      this.updateMapImageUrl(); // <-- Generar URL del mapa con nueva ubicación
       this.utilsSvc.presentToast({ message: 'Ubicación obtenida.', color: 'success', duration: 1500 });
     } catch (error: any) {
-      console.error('Error obteniendo la ubicación:', error);
-      let errorMessage = 'No se pudo obtener la ubicación.';
-      if (error.message && error.message.toLowerCase().includes('permission denied')) {
-        errorMessage = 'Permiso de ubicación denegado. Por favor, habilítalo en los ajustes.';
-      } else if (error.message && error.message.toLowerCase().includes('location unavailable')) {
-        errorMessage = 'Ubicación no disponible en este momento.';
-      }
-      this.utilsSvc.presentToast({ message: errorMessage, color: 'danger', duration: 3000 });
-      this.location = null;
+      // ... (tu manejo de error existente) ...
+      this.location = null; // Limpiar ubicación si falla
+      console.log('Location set to null due to GPS error.');
+      this.updateMapImageUrl(); // Asegurarse que la imagen del mapa se limpie
     } finally {
       this.isFetchingLocation = false;
     }
   }
 }
+
+/*
+this.utilsSvc.presentToast({ message: 'Ubicación obtenida.', color: 'success', duration: 1500 });
+} catch (error: any) {
+console.error('Error obteniendo la ubicación:', error);
+let errorMessage = 'No se pudo obtener la ubicación.';
+if (error.message && error.message.toLowerCase().includes('permission denied')) {
+  errorMessage = 'Permiso de ubicación denegado. Por favor, habilítalo en los ajustes.';
+} else if (error.message && error.message.toLowerCase().includes('location unavailable')) {
+  errorMessage = 'Ubicación no disponible en este momento.';
+}
+this.utilsSvc.presentToast({ message: errorMessage, color: 'danger', duration: 3000 });
+this.location = null;
+} finally {
+this.isFetchingLocation = false;
+}
+}
+}*/

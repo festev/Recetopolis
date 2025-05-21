@@ -38,25 +38,27 @@
     <ion-list-header class="ion-margin-top">
       <ion-label>Ubicación</ion-label>
     </ion-list-header>
-    <ion-item *ngIf="location && location.latitude && location.longitude">
-      <ion-label>
+
+    <ion-item *ngIf="mapImageUrl" lines="none" class="map-container">
+      <img [src]="mapImageUrl" alt="Mapa de la ubicación" style="width: 100%; height: auto; border-radius: 8px;">
+    </ion-item>
+
+    <ion-item *ngIf="!mapImageUrl && location && location.latitude && location.longitude">
+      <ion-label color="medium">
         <p>Latitud: {{ location.latitude?.toFixed(5) }}</p>
         <p>Longitud: {{ location.longitude?.toFixed(5) }}</p>
+        <p><small>(No se pudo cargar el mapa. Verifica la API Key)</small></p>
       </ion-label>
     </ion-item>
+
     <ion-item *ngIf="!location || !location.latitude || !location.longitude">
       <ion-label>Ubicación no establecida.</ion-label>
     </ion-item>
     <ion-button expand="block" (click)="getCurrentLocation()" [disabled]="isFetchingLocation" color="secondary"
       class="ion-margin-top">
       <ion-spinner *ngIf="isFetchingLocation" name="crescent" slot="start"></ion-spinner>
-      Obtener Ubicación Actual
+      {{ isFetchingLocation ? 'Obteniendo...' : 'Obtener Ubicación Actual' }}
     </ion-button>
-    <ion-button expand="block" (click)="saveProfile()" [disabled]="!displayName || displayName.trim() === ''"
-      class="ion-margin-top">
-      Guardar Cambios
-    </ion-button>
-
     <ion-button expand="block" (click)="saveProfile()" [disabled]="!displayName || displayName.trim() === ''"
       class="ion-margin-top">
       Guardar Cambios
