@@ -1,4 +1,4 @@
-<ion-header>
+<ion-header [translucent]="true">
   <ion-toolbar>
     <ion-buttons slot="start">
       <ion-back-button defaultHref="/main/home"></ion-back-button>
@@ -9,6 +9,18 @@
 
 <ion-content class="ion-padding">
   <div *ngIf="currentUser">
+
+    <div class="profile-picture-container ion-text-center ion-padding-vertical">
+      <ion-avatar (click)="selectImageSource()">
+        <img *ngIf="profileImageUrl" [src]="profileImageUrl" alt="Foto de perfil" />
+        <img *ngIf="!profileImageUrl" src="assets/icon/avatar-placeholder.png" alt="Placeholder de perfil" />
+      </ion-avatar>
+      <ion-button fill="clear" (click)="selectImageSource()">
+        <ion-icon slot="start" name="camera-outline"></ion-icon>
+        Cambiar Foto
+      </ion-button>
+    </div>
+
     <ion-list lines="full">
       <ion-item>
         <ion-label position="stacked">Nombre para mostrar</ion-label>
@@ -28,6 +40,7 @@
         <ion-input type="tel" [(ngModel)]="phoneNumber" placeholder="Ej: +54 9 11 12345678" name="phoneInput">
         </ion-input>
       </ion-item>
+
       <ion-item lines="none">
         <ion-label>
           <p><strong>Email:</strong> {{ currentUser.email }}</p>
@@ -35,14 +48,13 @@
         </ion-label>
       </ion-item>
     </ion-list>
+
     <ion-list-header class="ion-margin-top">
       <ion-label>Ubicación</ion-label>
     </ion-list-header>
-
     <ion-item *ngIf="mapImageUrl" lines="none" class="map-container">
       <img [src]="mapImageUrl" alt="Mapa de la ubicación" style="width: 100%; height: auto; border-radius: 8px;">
     </ion-item>
-
     <ion-item *ngIf="!mapImageUrl && location && location.latitude && location.longitude">
       <ion-label color="medium">
         <p>Latitud: {{ location.latitude?.toFixed(5) }}</p>
@@ -50,15 +62,15 @@
         <p><small>(No se pudo cargar el mapa. Verifica la API Key)</small></p>
       </ion-label>
     </ion-item>
-
-    <ion-item *ngIf="!location || !location.latitude || !location.longitude">
-      <ion-label>Ubicación no establecida.</ion-label>
+    <ion-item *ngIf="!location && !isFetchingLocation">
+      <ion-label color="medium">Ubicación no establecida.</ion-label>
     </ion-item>
     <ion-button expand="block" (click)="getCurrentLocation()" [disabled]="isFetchingLocation" color="secondary"
       class="ion-margin-top">
       <ion-spinner *ngIf="isFetchingLocation" name="crescent" slot="start"></ion-spinner>
       {{ isFetchingLocation ? 'Obteniendo...' : 'Obtener Ubicación Actual' }}
     </ion-button>
+
     <ion-button expand="block" (click)="saveProfile()" [disabled]="!displayName || displayName.trim() === ''"
       class="ion-margin-top">
       Guardar Cambios
