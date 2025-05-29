@@ -31,11 +31,11 @@ const routes: Routes = [
   {
     path: 'reset-password/:token', // La ruta para restablecer contraseña espera un parámetro 'token'
     loadChildren: () => import('./pages/reset-password/reset-password.module').then(m => m.ResetPasswordPageModule)
-  },
+  },/*
   {
     path: 'edit-profile',
     loadChildren: () => import('./pages/edit-profile/edit-profile.module').then(m => m.EditProfilePageModule)
-  },
+  },*/
 
 ];
 
