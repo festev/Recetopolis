@@ -12,8 +12,14 @@ export class UtilsService {
   router = inject(Router)
 
   //============ Loading ==============
-  loading() {
-    return this.loadingCtrl.create({ spinner: 'crescent' })
+  //loading() {
+  //return this.loadingCtrl.create({ spinner: 'crescent' })
+  //}
+  loading(message?: string) { // <--- Añade el parámetro opcional 'message'
+    return this.loadingCtrl.create({
+      spinner: 'crescent',
+      message: message // <--- Usa el mensaje aquí
+    });
   }
 
   //============ Toast ================
@@ -36,7 +42,7 @@ export class UtilsService {
 
   //============ Obtiene un elemento desde localstorage ================
   getFromLocalStorage(key: string) {
-    return JSON.parse (localStorage.getItem(key));
+    return JSON.parse(localStorage.getItem(key));
 
   }
 

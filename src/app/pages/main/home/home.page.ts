@@ -1,4 +1,3 @@
-// src/app/pages/main/home/home.page.ts
 import { Component, OnInit, OnDestroy, inject } from '@angular/core';
 import { DatePipe } from '@angular/common';
 import { FirebaseService } from 'src/app/services/firebase.service';
@@ -6,6 +5,8 @@ import { UtilsService } from 'src/app/services/utils.service';
 import { RecipesService } from 'src/app/recipes.service';
 import { Router } from '@angular/router';
 
+
+// ... (@Component decorator)
 @Component({
   selector: 'app-home',
   templateUrl: './home.page.html',
@@ -170,5 +171,12 @@ export class HomePage implements OnInit, OnDestroy {
 
   verFavoritos() {
     this.router.navigate(['/favoritos']);
+  }
+  // Método para navegar a la página de edición de perfil
+  onProfileClick() {
+    console.log('Botón de perfil clickeado');
+    console.log('Botón de perfil clickeado, navegando a /edit-profile');
+    this.router.navigate(['/edit-profile']);
+    this.utilsSvc.presentToast({ message: 'Perfil de usuario', duration: 2000, color: 'success' });
   }
 }

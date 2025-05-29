@@ -16,7 +16,7 @@ export class FirebaseService {
   utilsSvc = inject(UtilsService);
 
   //===================== Autenticación ======================
-  getAuth(){
+  getAuth() {
     return getAuth();
   }
 
@@ -38,7 +38,15 @@ export class FirebaseService {
 
   //===================== Enviar email para restablecer contraseña ======================
   sendRecoveryEmail(email: string) {
-    return sendPasswordResetEmail(getAuth(), email);
+    const actionCodeSettings = {
+      // URL a la que el usuario será redirigido después de un restablecimiento de contraseña exitoso
+      // o si el usuario abre el enlace en un dispositivo donde la aplicación no está instalada.
+      // Asegúrate de que este dominio esté autorizado en tu consola de Firebase.
+      url: `${window.location.origin}/auth`, // O tu página de login/inicio. Ajusta '/auth' a tu ruta de login.
+      handleCodeInApp: true, // Importante si quieres manejar el flujo en la app eventualmente
+    };
+    // Se añade actionCodeSettings como tercer argumento
+    return sendPasswordResetEmail(getAuth(), email, actionCodeSettings);
   }
   //===================== Cerrar Sesión ======================
   signOut() {
@@ -52,12 +60,13 @@ export class FirebaseService {
   //===================== Base de Datos ======================
 
   //===================== Setear un documento ======================
-  setDocument(path: string, data: any) {
-    return setDoc(doc(getFirestore(), path), data);
+  setDocument(path: string, data: any, mergeFields: boolean = false) { // Añadido parámetro mergeFields
+    return setDoc(doc(getFirestore(), path), data, { merge: mergeFields }); // Usar la opción merge
   }
 
   //===================== Obtener un documento ======================
   async getDocument(path: string) {
     return (await getDoc(doc(getFirestore(), path))).data();
   }
+
 }
