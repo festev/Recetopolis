@@ -10,10 +10,27 @@
   <div class="receta-container">
     <h2>{{ receta.title }}</h2>
 
-    <img [src]="receta.image" [alt]="receta.title" class="receta-image" />
+    <div class="imagenConBotones">
 
-    <p><strong>Ingredientes:</strong></p>
+      <img [src]="receta.image" [alt]="receta.title" class="receta-image" />
+
+      <div class="botones-superiores">
+
+        <a [href]="receta.sourceUrl" target="_blank" rel="noopener noreferrer" class="receta-link">
+          Ver receta completa
+        </a>
+
+        <ion-button fill="clear" (click)="cambiarFavorito()" class="favorite-button-card">
+          <ion-icon [color]="esFavorito ? 'danger' : 'medium'"
+            [name]="esFavorito ? 'heart' : 'heart-outline'">
+          </ion-icon>
+        </ion-button>
+
+      </div>
+    </div>
+
     <div class="bloque-texto">
+      <p><strong>Ingredientes:</strong></p>
       <ul>
         <li *ngFor="let ingredient of receta.extendedIngredients">
           {{ ingredient.original }}
@@ -21,13 +38,10 @@
       </ul>
     </div>
 
-    <p><strong>Instrucciones:</strong></p>
     <div class="bloque-texto">
+      <p><strong>Instrucciones:</strong></p>
       <div [innerHTML]="receta.instructions">></div>
     </div>
 
-    <a [href]="receta.sourceUrl" target="_blank" rel="noopener noreferrer">
-      Ver receta completa
-    </a>
   </div>
 </ion-content>

@@ -1,15 +1,42 @@
 .receta-container {
   text-align: center;
   padding: 16px;
+  padding-bottom: 10vh;
 }
 
-.recipe-image {
+.imagenConBotones {
   width: 80%;
-  max-width: 300px;
-  height: auto;
+  max-width: 500px;
   margin: 16px auto;
+  text-align: center;
+}
+
+.receta-image {
+  width: 100%;
+  height: auto;
   border-radius: 10px;
   display: block;
+}
+
+.botones-superiores {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 8px;
+}
+
+.receta-link {
+  font-size: 14px;
+  color: #3880ff;
+  text-decoration: underline;
+  background-color: rgba(60, 59, 59, 0.5);
+  padding: 4px 6px;
+  border-radius: 4px;
+  transition: background-color 0.2s ease;
+}
+
+.receta-link:hover {
+  background-color: rgba(56, 128, 255, 0.2);
 }
 
 .bloque-texto {

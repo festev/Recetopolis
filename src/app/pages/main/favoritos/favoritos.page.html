@@ -3,28 +3,27 @@
   <ion-toolbar>
     <ion-title>Favoritos</ion-title>
     <ion-buttons slot="end">
-      <ion-button (click)="irAHome()">
-        <ion-icon slot="start" name="arrow-back-outline"></ion-icon>
-        VOLVER
-      </ion-button>
+      <ion-back-button defaultHref="/home" text="VOLVER"></ion-back-button>
     </ion-buttons>
   </ion-toolbar>
 </ion-header>
 
 <ion-content>
   <ion-list *ngIf="favoritos.length > 0; else noFavoritos">
-    <ion-item *ngFor="let favorito of favoritos" (click)="verReceta(favorito.sourceUrl)">
+    <ion-item *ngFor="let favorito of favoritos" (click)="getRecipeInfo(favorito.id)">
       <ion-thumbnail slot="start">
-        <img [src]="favorito.foto" alt="{{favorito.title}}">
+        <img [src]="favorito.image" alt="favorito.title">
       </ion-thumbnail>
       <ion-label>
 
-        <h2>Receta {{ favorito.id }}</h2>
+        <h2>{{ favorito.title }}</h2>
 
-        <p> {{favorito.sourceUrl}} </p>
+        <a [href]="favorito.sourceUrl" target="_blank" rel="noopener noreferrer" (click)="$event.stopPropagation()">
+          {{ favorito.sourceUrl }}
+        </a>
 
       </ion-label>
-      <ion-button (click)="toggleFavorito(favorito)" slot="end">
+      <ion-button (click)="eliminarFavorito(favorito)" slot="end">
         <ion-icon name="heart" color="danger"></ion-icon>
       </ion-button>
     </ion-item>

@@ -23,7 +23,6 @@ export class HomePage implements OnInit, OnDestroy {
 
   ingredientToAdd: string = '';
   recipes: RecetaLista[] = [];
-  selectedRecipe: Receta | null = null;
 
   currentTime: string | null = '';
   private timerInterval: any;
@@ -51,8 +50,6 @@ export class HomePage implements OnInit, OnDestroy {
     this.timerInterval = setInterval(() => {
       this.updateTime();
     }, 1000);
-
-    this.loadFavoritos();
   }
 
   ngOnDestroy() {
@@ -76,7 +73,6 @@ export class HomePage implements OnInit, OnDestroy {
     this.recipesService.getRecipesByIngredients(this.ingredientToAdd, 28).subscribe({
       next: data => {
         this.recipes = data;
-        this.selectedRecipe = null;
 
         setTimeout(() => { //reinicia el Swiper a la primera página
           if (this.swiperRef?.nativeElement?.swiper) {
@@ -101,21 +97,20 @@ export class HomePage implements OnInit, OnDestroy {
   }
 
   getRecipeInfo(id: number) {
-    this.router.navigate(['/receta', id]);
-    /*this.recipesService.getRecipeInformation(id).subscribe({
+    this.recipesService.getRecipeInformation(id).subscribe({
       next: data => {
-        this.selectedRecipe = data;
+        this.recipesService.setRecetaSeleccionada(data);
+        this.router.navigate(['/receta', id]);       
       },
       error: err => {
         console.error('Error al obtener información de la receta:', err);
         this.utilsSvc.presentToast({ message: 'Error al obtener detalles de la receta.', duration: 3000, color: 'danger' });
       }
-    });*/
+    });
   }
 
   limpiarResultados() {
     this.recipes = [];
-    this.selectedRecipe = null;
     this.ingredientToAdd = '';
     this.recetasAgrupadasPorPagina = [];
   }
@@ -173,7 +168,7 @@ export class HomePage implements OnInit, OnDestroy {
     }
   }
 
-  toggleFavorito(selectedRecipe: any) {
+  /*toggleFavorito(selectedRecipe: any) {
     let favoritoExistente = null;
     for (const fav of this.favoritos) {
       if (fav.id === selectedRecipe.id) {
@@ -229,11 +224,12 @@ export class HomePage implements OnInit, OnDestroy {
         this.favoritos = new Set();
       }
     }
-  }
+  }*/
 
   verFavoritos() {
     this.router.navigate(['/favoritos']);
   }
+
   // Método para navegar a la página de edición de perfil
   onProfileClick() {
     console.log('Botón de perfil clickeado');

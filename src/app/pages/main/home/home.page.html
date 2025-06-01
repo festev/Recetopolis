@@ -18,27 +18,30 @@
 </ion-header>
 
 <ion-content>
-  <ion-button id="profile-icon-button" fill="clear" (click)="onProfileClick()">
-    <ion-icon slot="icon-only" name="person-circle-outline" aria-label="Perfil"></ion-icon>
-  </ion-button>
-  <div class="input-container">
-    <ion-label position="start">Agregar Ingredientes:</ion-label>
-    <ion-input [(ngModel)]="ingredientToAdd" placeholder="Ejemplo: zanahorias"></ion-input>
-  </div>
 
-  <div class="button-container">
-    <ion-button color="primary" (click)="addIngredient()">
-      <ion-icon name="search-outline" slot="start"></ion-icon>
-      Buscar Recetas
+  <div class="botonesTop">
+    <ion-button id="profile-icon-button" fill="clear" (click)="onProfileClick()">
+      <ion-icon slot="icon-only" name="person-circle-outline" aria-label="Perfil"></ion-icon>
     </ion-button>
-    <ion-button color="danger" (click)="limpiarResultados()">
-      <ion-icon name="trash-outline" slot="start"></ion-icon>
-      Limpiar Resultados
-    </ion-button>
-    <ion-button color="tertiary" (click)="verFavoritos()">
-      <ion-icon name="heart-outline" slot="start"></ion-icon>
-      Ver Favoritos
-    </ion-button>
+    <div class="input-container">
+      <ion-label position="start">Agregar Ingredientes:</ion-label>
+      <ion-input [(ngModel)]="ingredientToAdd" placeholder="Ejemplo: zanahorias"></ion-input>
+    </div>
+
+    <div class="button-container">
+      <ion-button color="primary" (click)="addIngredient()">
+        <ion-icon name="search-outline" slot="start"></ion-icon>
+        Buscar Recetas
+      </ion-button>
+      <ion-button color="danger" (click)="limpiarResultados()">
+        <ion-icon name="trash-outline" slot="start"></ion-icon>
+        Limpiar Resultados
+      </ion-button>
+      <ion-button color="tertiary" (click)="verFavoritos()">
+        <ion-icon name="heart-outline" slot="start"></ion-icon>
+        Ver Favoritos
+      </ion-button>
+    </div>
   </div>
 
   <swiper-container #swiperRef slides-per-view="1" pagination="true" navigation="true"  >
@@ -90,6 +93,7 @@
 
   -->
 
+  <!--
   <ion-card *ngIf="selectedRecipe">
     <ion-card-header>
       <ion-card-title>{{ selectedRecipe.title }}</ion-card-title>
@@ -110,4 +114,6 @@
       <a [href]="selectedRecipe.sourceUrl" target="_blank" rel="noopener noreferrer">Ver receta completa</a>
     </ion-card-content>
   </ion-card>
+  -->
+
 </ion-content>

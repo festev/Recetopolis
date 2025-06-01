@@ -9,22 +9,38 @@ import { Receta, RecetaLista } from 'src/app/models/receta.model';
  providedIn: 'root'  
 })  
 export class RecipesService {  
-    private apiKey = 'aff7fdd4b80c4563a585af707c224d6e';  
+  private apiKey = 'e7c9d8eed7d54fdba216cf4b243d515d';
+  private recetasBuscadas: RecetaLista[] = [];
+  private recetaSeleccionada: Receta | null = null;
 
-    constructor(private http: HttpClient) { }  
-  
-    getRecipesByIngredients(ingredients: string, number: number): Observable<RecetaLista[]> {  
-      return this.http.get<any[]>(`https://api.spoonacular.com/recipes/findByIngredients?ingredients=${ingredients}&number=${number}&apiKey=${this.apiKey}`)
-      .pipe(
-        map(response =>
-          response.map(data => new RecetaLista(data)))
-      );
-    }  
-  
-    getRecipeInformation(id: number): Observable<Receta> {  
-      return this.http.get(`https://api.spoonacular.com/recipes/${id}/information?apiKey=${this.apiKey}`)
-      .pipe(
-        map(data => new Receta(data))
-      );
-    }  
+  constructor(private http: HttpClient) { }  
+
+  getRecipesByIngredients(ingredients: string, number: number): Observable<RecetaLista[]> {  
+    return this.http.get<any[]>(`https://api.spoonacular.com/recipes/findByIngredients?ingredients=${ingredients}&number=${number}&apiKey=${this.apiKey}`)
+    .pipe(
+      map(response => response.map(data => new RecetaLista(data))),
+      tap(recetas => this.recetasBuscadas = recetas)
+    );
+  }  
+
+  getRecipeInformation(id: number): Observable<Receta> {  
+    return this.http.get(`https://api.spoonacular.com/recipes/${id}/information?apiKey=${this.apiKey}`)
+    .pipe(
+      map(data => new Receta(data)),
+      tap(receta => this.recetaSeleccionada = receta)
+    );
+  }
+
+  getRecetasBuscadas(): RecetaLista[] {
+    return this.recetasBuscadas;
+  }
+
+  getRecetaSeleccionada(): Receta | null {
+    return this.recetaSeleccionada;
+  }
+
+  setRecetaSeleccionada(receta: Receta) {
+    this.recetaSeleccionada = receta;
+  }
+
 }

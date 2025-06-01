@@ -1,5 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
+import { Receta } from 'src/app/models/receta.model';
+import { FavoritosService } from 'src/app/services/favoritos.service';
+import { RecipesService } from 'src/app/services/recipes.service';
+import { UtilsService } from 'src/app/services/utils.service';
 
 @Component({
   selector: 'app-favoritos',
@@ -7,53 +11,38 @@ import { Router } from '@angular/router';
   styleUrls: ['./favoritos.page.scss'],
 })
 
-export class FavoritosPage {
-  favoritos: any[] = [];
-  selectedRecipe: any[] = [];
+export class FavoritosPage implements OnInit {
+  favoritos: Receta[] = [];
 
-  constructor(private router: Router) {
-    this.cargarFavoritos();
+  constructor(
+    private router: Router,
+    public favoritosService: FavoritosService,
+    private recipesService: RecipesService,
+    private utilsSvc: UtilsService) {
   }
-  irAHome() {
-    this.router.navigate(['/main/home']); // Navega a la ruta de tu página principal
-  }
-  cargarFavoritos() {
+  
+  ngOnInit(): void { }
 
-    const favoritosGuardados = localStorage.getItem('favoritos');
-    this.favoritos = favoritosGuardados ? JSON.parse(favoritosGuardados) : [];
-
-    //console.log(this.favoritos);  
+  ionViewWillEnter() {
+    this.favoritos = this.favoritosService.getFavoritos();
   }
 
-  toggleFavorito(selectedRecipe: any) {
-    const index = this.favoritos.findIndex(r => r.id === selectedRecipe.id); // Asumiendo que cada receta tiene un ID único  
-
-    if (index > -1) {
-      // Si está en la lista, quitarlo  
-      this.favoritos.splice(index, 1);
-    } else {
-      // Si no está, agregarlo  
-      //console.log('Agregando favorito:', selectedRecipe.sourceUrl); // Verifico que se grabe la url maldita receta
-      this.favoritos.push({
-        id: selectedRecipe.id,
-        //title: selectedRecipe.title, // Asegúrate de que estas propiedades existan  
-        foto: selectedRecipe.image, // Cambiado de 'image' a 'imageUrl'  
-        sourceUrl: selectedRecipe.sourceUrl // Asegúrate de que este campo existe en 'recipe'  
-      });
-    }
-
-    // Guardar la lista actualizada en localStorage  
-    localStorage.setItem('favoritos', JSON.stringify(this.favoritos));
+  eliminarFavorito(favorito: Receta){
+    this.favoritosService.toggleFavorito(favorito);
+    this.favoritos = this.favoritosService.getFavoritos();
   }
 
-  // Nuevo método para manejar el clic en el enlace  
-  verReceta(sourceUrl: string) {
-    console.log(sourceUrl); // Aquí se imprime el enlace en la consola  
-    window.open(sourceUrl, "_blank"); // Abrir la receta en una nueva pestaña  
-  }
-
-  agregarASeleccionados(selectedRecipe: any) {
-    this.toggleFavorito(selectedRecipe);
+  getRecipeInfo(id: number) {
+    this.recipesService.getRecipeInformation(id).subscribe({
+      next: data => {
+        this.recipesService.setRecetaSeleccionada(data);
+        this.router.navigate(['/receta', id]);       
+      },
+      error: err => {
+        console.error('Error al obtener información de la receta:', err);
+        this.utilsSvc.presentToast({ message: 'Error al obtener detalles de la receta.', duration: 3000, color: 'danger' });
+      }
+    });
   }
 
 }
