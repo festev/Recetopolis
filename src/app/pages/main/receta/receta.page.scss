@@ -1,0 +1,29 @@
+.receta-container {
+  text-align: center;
+  padding: 16px;
+}
+
+.recipe-image {
+  width: 80%;
+  max-width: 300px;
+  height: auto;
+  margin: 16px auto;
+  border-radius: 10px;
+  display: block;
+}
+
+.bloque-texto {
+  max-width: 600px;
+  margin: 0 auto 24px auto;
+  padding: 0 12px;
+  text-align: justify;
+}
+
+ul {
+padding-left: 1.2em;
+list-style-position: inside;
+}
+
+li {
+margin-bottom: 6px;
+}

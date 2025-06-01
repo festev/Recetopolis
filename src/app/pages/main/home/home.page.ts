@@ -2,8 +2,9 @@ import { Component, ElementRef, ViewChild, OnInit, OnDestroy, inject } from '@an
 import { DatePipe } from '@angular/common';
 import { FirebaseService } from 'src/app/services/firebase.service';
 import { UtilsService } from 'src/app/services/utils.service';
-import { RecipesService } from 'src/app/recipes.service';
+import { RecipesService } from 'src/app/services/recipes.service';
 import { Router } from '@angular/router';
+import { Receta, RecetaLista } from 'src/app/models/receta.model';
 
 
 // ... (@Component decorator)
@@ -21,8 +22,8 @@ export class HomePage implements OnInit, OnDestroy {
   utilsSvc = inject(UtilsService);
 
   ingredientToAdd: string = '';
-  recipes: any[] = [];
-  selectedRecipe: any = null;
+  recipes: RecetaLista[] = [];
+  selectedRecipe: Receta | null = null;
 
   currentTime: string | null = '';
   private timerInterval: any;
@@ -30,9 +31,12 @@ export class HomePage implements OnInit, OnDestroy {
   items: string[];
   favoritos: Set<{ id: number, sourceUrl: string, foto?: string }> = new Set();
 
-  recetasPorPagina = 7;
+  //Variable de la paginación con los botones comentados
   paginaActual = 1;
-  recetasAgrupadasPorPagina: any[][] = [];
+
+  //Variables de la paginación con el Swiper (no borrar este)
+  recetasAgrupadasPorPagina: RecetaLista[][] = [];
+  recetasPorPagina = 7;
 
   constructor(
     private recipesService: RecipesService,
@@ -74,14 +78,15 @@ export class HomePage implements OnInit, OnDestroy {
         this.recipes = data;
         this.selectedRecipe = null;
 
-        setTimeout(() => { //reinicia el slider a la primera página
+        setTimeout(() => { //reinicia el Swiper a la primera página
           if (this.swiperRef?.nativeElement?.swiper) {
             this.swiperRef.nativeElement.swiper.slideTo(0);
           }
         }, 0);
 
-        this.paginaActual = 1;
-        this.agruparRecetasPorPagina();
+        this.paginaActual = 1; //esto es para que los botones comentados empiecen en la primera página (se puede borrar)
+
+        this.agruparRecetasPorPagina(); //esto es para la lógica de la paginación del Swiper (no borrar este)
 
         if (data.length === 0) {
           this.utilsSvc.presentToast({ message: 'No se encontraron recetas para los ingredientes proporcionados.', duration: 3000, color: 'medium' });
@@ -96,7 +101,8 @@ export class HomePage implements OnInit, OnDestroy {
   }
 
   getRecipeInfo(id: number) {
-    this.recipesService.getRecipeInformation(id).subscribe({
+    this.router.navigate(['/receta', id]);
+    /*this.recipesService.getRecipeInformation(id).subscribe({
       next: data => {
         this.selectedRecipe = data;
       },
@@ -104,7 +110,7 @@ export class HomePage implements OnInit, OnDestroy {
         console.error('Error al obtener información de la receta:', err);
         this.utilsSvc.presentToast({ message: 'Error al obtener detalles de la receta.', duration: 3000, color: 'danger' });
       }
-    });
+    });*/
   }
 
   limpiarResultados() {
@@ -127,7 +133,7 @@ export class HomePage implements OnInit, OnDestroy {
 
   // DESCOMENTAR SI SE QUIEREN ACTIVAR LOS BOTONES:
 
-  get paginacionDeRecetas(): any[] {
+  /*get paginacionDeRecetas(): any[] {
     const start = (this.paginaActual - 1) * this.recetasPorPagina;
     const end = start + this.recetasPorPagina;
     return this.recipes.slice(start, end);
@@ -147,7 +153,7 @@ export class HomePage implements OnInit, OnDestroy {
     if (this.paginaActual > 1) {
       this.paginaActual--;
     }
-  }
+  }*/
 
   // ====================================================
 

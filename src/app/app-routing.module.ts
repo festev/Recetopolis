@@ -25,6 +25,10 @@ const routes: Routes = [
   },
   // NUEVAS RUTAS:
   {
+    path: 'receta/:id',
+    loadChildren: () => import('./pages/main/receta/receta.module').then(m => m.RecetaPageModule)
+  },
+  {
     path: 'forgot-password',
     loadChildren: () => import('./pages/forgot-password/forgot-password.module').then(m => m.ForgotPasswordPageModule)
   },

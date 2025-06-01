@@ -22,7 +22,11 @@ const routes: Routes = [
   },
   { 
     path: 'favoritos', component: FavoritosPage 
+  },  {
+    path: 'receta',
+    loadChildren: () => import('./receta/receta.module').then( m => m.RecetaPageModule)
   },
+
 
 ];
 

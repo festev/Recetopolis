@@ -1,0 +1,33 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/home"></ion-back-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content *ngIf="receta">
+  <div class="receta-container">
+    <h2>{{ receta.title }}</h2>
+
+    <img [src]="receta.image" [alt]="receta.title" class="receta-image" />
+
+    <p><strong>Ingredientes:</strong></p>
+    <div class="bloque-texto">
+      <ul>
+        <li *ngFor="let ingredient of receta.extendedIngredients">
+          {{ ingredient.original }}
+        </li>
+      </ul>
+    </div>
+
+    <p><strong>Instrucciones:</strong></p>
+    <div class="bloque-texto">
+      <div [innerHTML]="receta.instructions">></div>
+    </div>
+
+    <a [href]="receta.sourceUrl" target="_blank" rel="noopener noreferrer">
+      Ver receta completa
+    </a>
+  </div>
+</ion-content>
