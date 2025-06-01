@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, inject } from '@angular/core';
+import { Component, ElementRef, ViewChild, OnInit, OnDestroy, inject } from '@angular/core';
 import { DatePipe } from '@angular/common';
 import { FirebaseService } from 'src/app/services/firebase.service';
 import { UtilsService } from 'src/app/services/utils.service';
@@ -15,6 +15,8 @@ import { Router } from '@angular/router';
 })
 export class HomePage implements OnInit, OnDestroy {
 
+  @ViewChild('swiperRef', { read: ElementRef }) swiperRef!: ElementRef;
+
   firebaseSvc = inject(FirebaseService);
   utilsSvc = inject(UtilsService);
 
@@ -28,19 +30,24 @@ export class HomePage implements OnInit, OnDestroy {
   items: string[];
   favoritos: Set<{ id: number, sourceUrl: string, foto?: string }> = new Set();
 
+  recetasPorPagina = 7;
+  paginaActual = 1;
+  recetasAgrupadasPorPagina: any[][] = [];
+
   constructor(
     private recipesService: RecipesService,
     private router: Router,
     private datePipe: DatePipe
   ) {
     this.items = ['Elemento 1', 'Elemento 2', 'Elemento 3', 'Elemento 4', 'Elemento 5'];
-  }
+    }
 
   ngOnInit() {
     this.updateTime();
     this.timerInterval = setInterval(() => {
       this.updateTime();
     }, 1000);
+
     this.loadFavoritos();
   }
 
@@ -49,6 +56,7 @@ export class HomePage implements OnInit, OnDestroy {
       clearInterval(this.timerInterval);
     }
   }
+
 
   updateTime() {
     const now = new Date();
@@ -61,10 +69,20 @@ export class HomePage implements OnInit, OnDestroy {
       this.utilsSvc.presentToast({ message: 'Por favor, ingresa un ingrediente.', duration: 2000, color: 'warning' });
       return;
     }
-    this.recipesService.getRecipesByIngredients(this.ingredientToAdd, 5).subscribe({
+    this.recipesService.getRecipesByIngredients(this.ingredientToAdd, 28).subscribe({
       next: data => {
         this.recipes = data;
         this.selectedRecipe = null;
+
+        setTimeout(() => { //reinicia el slider a la primera página
+          if (this.swiperRef?.nativeElement?.swiper) {
+            this.swiperRef.nativeElement.swiper.slideTo(0);
+          }
+        }, 0);
+
+        this.paginaActual = 1;
+        this.agruparRecetasPorPagina();
+
         if (data.length === 0) {
           this.utilsSvc.presentToast({ message: 'No se encontraron recetas para los ingredientes proporcionados.', duration: 3000, color: 'medium' });
         }
@@ -93,7 +111,45 @@ export class HomePage implements OnInit, OnDestroy {
     this.recipes = [];
     this.selectedRecipe = null;
     this.ingredientToAdd = '';
+    this.recetasAgrupadasPorPagina = [];
   }
+
+  // ================== PAGINACIÓN =====================
+
+  agruparRecetasPorPagina() {
+    const pages = [];
+    for (let i = 0; i < this.recipes.length; i += this.recetasPorPagina) {
+      pages.push(this.recipes.slice(i, i + this.recetasPorPagina));
+    }
+    
+    this.recetasAgrupadasPorPagina = pages;
+  }
+
+  // DESCOMENTAR SI SE QUIEREN ACTIVAR LOS BOTONES:
+
+  get paginacionDeRecetas(): any[] {
+    const start = (this.paginaActual - 1) * this.recetasPorPagina;
+    const end = start + this.recetasPorPagina;
+    return this.recipes.slice(start, end);
+  }
+
+  get paginasTotales(): number {
+    return Math.ceil(this.recipes.length / this.recetasPorPagina);
+  }
+
+  paginaSiguiente() {
+    if (this.paginaActual < this.paginasTotales) {
+      this.paginaActual++;
+    }
+  }
+
+  paginaAnterior() {
+    if (this.paginaActual > 1) {
+      this.paginaActual--;
+    }
+  }
+
+  // ====================================================
 
   async signOut() {
     try {

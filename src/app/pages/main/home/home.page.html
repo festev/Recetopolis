@@ -41,16 +41,54 @@
     </ion-button>
   </div>
 
-  <ion-list>
-    <ion-item class="hover-item" *ngFor="let recipe of recipes" (click)="getRecipeInfo(recipe.id)">
-      <ion-thumbnail slot="start">
-        <img [src]="recipe.image" [alt]="recipe.title">
-      </ion-thumbnail>
-      <ion-label>
-        <h2>{{ recipe.title }}</h2>
-      </ion-label>
-    </ion-item>
-  </ion-list>
+  <swiper-container #swiperRef slides-per-view="1" pagination="true" navigation="true"  >
+
+    <swiper-slide *ngFor="let pagina of recetasAgrupadasPorPagina">
+      <ion-list>
+        <ion-item *ngFor="let recipe of pagina" class="hover-item"  (click)="getRecipeInfo(recipe.id)">
+          <ion-thumbnail slot="start">
+            <img [src]="recipe.image" [alt]="recipe.title">
+          </ion-thumbnail>
+          <ion-label>
+            <h2>{{ recipe.title }}</h2>
+          </ion-label>
+        </ion-item>
+      </ion-list>
+    </swiper-slide>
+
+  </swiper-container>
+
+  <!-- DESCOMENTAR SI SE QUIEREN ACTIVAR LOS BOTONES: -->
+
+  <!--
+    <ion-list>
+      <ion-item *ngFor="let recipe of paginacionDeRecetas" class="hover-item"  (click)="getRecipeInfo(recipe.id)">
+        <ion-thumbnail slot="start">
+          <img [src]="recipe.image" [alt]="recipe.title">
+        </ion-thumbnail>
+        <ion-label>
+          <h2>{{ recipe.title }}</h2>
+        </ion-label>
+      </ion-item>
+    </ion-list>
+
+    <ion-card class="card_paginacion">
+      <ion-row class="ion-align-items-center ion-justify-content-between">
+        <ion-button fill="outline" color="medium" (click)="paginaAnterior()" [disabled]="paginaActual === 1">
+          <ion-icon name="arrow-back-outline" slot="start"></ion-icon>
+          Anterior
+        </ion-button>
+
+        <ion-label class="ion-text-center">Página {{ paginaActual }} de {{ paginasTotales }}</ion-label>
+
+        <ion-button fill="outline" color="medium" (click)="paginaSiguiente()" [disabled]="paginaActual === paginasTotales">
+          Siguiente
+          <ion-icon name="arrow-forward-outline" slot="end"></ion-icon>
+        </ion-button>
+      </ion-row>
+    </ion-card>
+
+  -->
 
   <ion-card *ngIf="selectedRecipe">
     <ion-card-header>

@@ -163,11 +163,63 @@ ion-card {
 }
 
 ion-list {
-  background: rgba(255, 255, 255, 0.1); // Fondo blanco muy sutil y transparente
   --ion-background-color: transparent; // Asegura que Ionic no aplique un fondo
   backdrop-filter: blur(8px); // Efecto de desenfoque
   border-radius: 12px; // Esquinas redondeadas
   margin: 10px 16px; // Margen alrededor de la lista (ajustado para más espacio lateral)
-  padding: 5px 0; // Padding vertical interno
+  padding: 3%; // Padding vertical interno
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); // Sombra sutil
 }
+
+/* ================ PAGINACION ================== */
+
+swiper-container {
+  position: relative;
+  padding: 0 2rem 3rem 2rem; /* izquierda, derecha y abajo */
+  --swiper-navigation-top-offset: 50%;     /* Posición vertical */
+  --swiper-navigation-color: #999;  
+  //--swiper-navigation-size: 6vw;               /* Flechas relativas al ancho de pantalla */
+  //--swiper-navigation-sides-offset: 4vw;       /* Margen desde el borde */
+
+  --swiper-pagination-color: #999;
+  --swiper-pagination-bullet-inactive-color: #cccccc71;
+  --swiper-pagination-bullet-opacity: 1;
+  //--swiper-pagination-bottom: 5vh;     /* Distancia desde abajo */
+}
+
+swiper-container::part(button-prev) {
+  left: 2%;
+}
+
+swiper-container::part(button-next) {
+  right: 2%;
+}
+
+swiper-container::part(pagination) {
+  bottom: 4%;
+}
+
+// DESCOMENTAR SI SE QUIEREN ACTIVAR LOS BOTONES:
+
+/*.card_paginacion {
+  margin: 16px auto;
+  padding: 8px;
+  max-width: 400px;
+  background-color: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(10px);
+  border-radius: 12px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  color: white;
+}
+
+.card_paginacion ion-button {
+  --border-radius: 20px;
+  --background: transparent;
+  --color: white;
+  --border-color: var(--ion-color-medium);
+}
+
+.card_paginacion ion-label {
+  font-weight: bold;
+  color: white;
+}*/
