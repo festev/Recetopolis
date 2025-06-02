@@ -1,6 +1,6 @@
-import { inject, Injectable } from '@angular/core';
-import { ActivatedRouteSnapshot, RouterStateSnapshot, CanActivate, UrlTree } from '@angular/router';
-import { Observable } from 'rxjs';
+import { Injectable } from '@angular/core';
+import { CanActivate } from '@angular/router';
+import { map, Observable, take } from 'rxjs';
 import { FirebaseService } from '../services/firebase.service';
 import { UtilsService } from '../services/utils.service';
 
@@ -9,29 +9,25 @@ import { UtilsService } from '../services/utils.service';
 })
 export class NoAuthGuard implements CanActivate {
 
-  firebaseSvc = inject(FirebaseService);
-  utilsSvc = inject(UtilsService);
+  constructor(private firebaseSvc: FirebaseService, private utilsSvc: UtilsService) {}
 
-  canActivate(
-    route: ActivatedRouteSnapshot,
-    state: RouterStateSnapshot): Observable<boolean | UrlTree> | Promise<boolean | UrlTree> | boolean | UrlTree {
+  canActivate(): Observable<boolean> {
 
-    return new Promise((resolve) => {
+    console.log("NoAuthGuard: activado");
 
-      console.log("NoAuthGuard: activado");
-
-      this.firebaseSvc.getAuth().onAuthStateChanged((auth) => {
-
-        if (!auth){
-          console.log("NoAuthGuard: sin sesión");
-          resolve(true);
-        }
-        else {
+    return this.firebaseSvc.isAuthenticated.pipe(
+      take(1),
+      map(isAuth => {
+        if (isAuth) {
           console.log("NoAuthGuard: sesión activa. Redirigiendo...");
           this.utilsSvc.routerLink('/main/home');
-          resolve(false);
+          return false;
         }
+        console.log("NoAuthGuard: sin sesión");
+        return true;
       })
-    });
+    );
+
   }
+  
 }

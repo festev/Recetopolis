@@ -5,6 +5,7 @@ import { User } from '../models/user.model';
 import { AngularFirestore } from '@angular/fire/compat/firestore';
 import { getFirestore, setDoc, doc, getDoc } from '@angular/fire/firestore';
 import { UtilsService } from './utils.service';
+import { map } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -16,10 +17,13 @@ export class FirebaseService {
   utilsSvc = inject(UtilsService);
 
   //===================== Autenticación ======================
+  isAuthenticated = this.auth.authState.pipe(
+    map(user => !!user)
+  );
+
   getAuth() {
     return getAuth();
   }
-
 
   //===================== Acceder ======================
   signIn(user: User) {
@@ -41,18 +45,17 @@ export class FirebaseService {
     const actionCodeSettings = {
       // URL a la que el usuario será redirigido después de un restablecimiento de contraseña exitoso
       // o si el usuario abre el enlace en un dispositivo donde la aplicación no está instalada.
-      // Asegúrate de que este dominio esté autorizado en tu consola de Firebase.
+      // Asegurarse de que este dominio esté autorizado en tu consola de Firebase.
       url: `${window.location.origin}/auth`, // O tu página de login/inicio. Ajusta '/auth' a tu ruta de login.
       handleCodeInApp: true, // Importante si quieres manejar el flujo en la app eventualmente
     };
-    // Se añade actionCodeSettings como tercer argumento
     return sendPasswordResetEmail(getAuth(), email, actionCodeSettings);
   }
   //===================== Cerrar Sesión ======================
   signOut() {
     getAuth().signOut().then(() => {
       localStorage.removeItem('user');
-      //this.utilsSvc.routerLink('/auth');  //al parecer el AuthGuard detecta solo de que ya no hay sesión y redirige solo
+      this.utilsSvc.routerLink('/auth');
     });
   }
 

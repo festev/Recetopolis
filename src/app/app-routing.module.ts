@@ -1,7 +1,6 @@
 // src/app/app-routing.module.ts
 import { NgModule } from '@angular/core';
 import { PreloadAllModules, RouterModule, Routes } from '@angular/router';
-import { FavoritosPage } from './pages/main/favoritos/favoritos.page';
 import { NoAuthGuard } from './guards/no-auth.guard';
 import { AuthGuard } from './guards/auth.guard';
 
@@ -18,27 +17,6 @@ const routes: Routes = [
   {
     path: 'main',
     loadChildren: () => import('./pages/main/main.module').then( m => m.MainPageModule), canActivate:[AuthGuard]
-  },
-  {
-    path: 'favoritos',
-    component: FavoritosPage
-  },
-  // NUEVAS RUTAS:
-  {
-    path: 'receta/:id',
-    loadChildren: () => import('./pages/main/receta/receta.module').then(m => m.RecetaPageModule), canActivate:[AuthGuard]
-  },
-  {
-    path: 'forgot-password',
-    loadChildren: () => import('./pages/forgot-password/forgot-password.module').then(m => m.ForgotPasswordPageModule), canActivate:[NoAuthGuard]
-  },
-  {
-    path: 'reset-password/:token', // La ruta para restablecer contraseña espera un parámetro 'token'
-    loadChildren: () => import('./pages/reset-password/reset-password.module').then(m => m.ResetPasswordPageModule), canActivate:[NoAuthGuard]
-  },
-  {
-    path: 'edit-profile',
-    loadChildren: () => import('./pages/edit-profile/edit-profile.module').then(m => m.EditProfilePageModule), canActivate:[AuthGuard]
   }
 
 ];

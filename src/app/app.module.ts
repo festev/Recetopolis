@@ -15,18 +15,13 @@ import { environment } from 'src/environments/environment.prod';
 import { FavoritosPage } from './pages/main/favoritos/favoritos.page';
 import { MainPage } from './pages/main/main.page';
 
-const routes: Routes = [  
-  { path: '', component: MainPage }, // Cambia esto según tu estructura  
-  { path: 'favoritos', component: FavoritosPage },  
-];
-
 @NgModule({
   declarations: [AppComponent],
   imports: [
     BrowserModule,
     IonicModule.forRoot({ mode: 'md' }),
     AppRoutingModule,
-    AngularFireModule.initializeApp(environment.firebaseConfig), HttpClientModule, FormsModule, RouterModule.forChild(routes)
+    AngularFireModule.initializeApp(environment.firebaseConfig), HttpClientModule, FormsModule
   ],
   providers: [{ provide: RouteReuseStrategy, useClass: IonicRouteStrategy }],
   bootstrap: [AppComponent],

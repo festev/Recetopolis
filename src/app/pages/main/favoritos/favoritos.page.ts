@@ -36,7 +36,7 @@ export class FavoritosPage implements OnInit {
     this.recipesService.getRecipeInformation(id).subscribe({
       next: data => {
         this.recipesService.setRecetaSeleccionada(data);
-        this.router.navigate(['/receta', id]);       
+        this.router.navigate(['/main/receta', id]);       
       },
       error: err => {
         console.error('Error al obtener información de la receta:', err);

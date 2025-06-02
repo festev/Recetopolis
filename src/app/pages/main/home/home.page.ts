@@ -100,7 +100,7 @@ export class HomePage implements OnInit, OnDestroy {
     this.recipesService.getRecipeInformation(id).subscribe({
       next: data => {
         this.recipesService.setRecetaSeleccionada(data);
-        this.router.navigate(['/receta', id]);       
+        this.router.navigate(['/main/receta', id]);       
       },
       error: err => {
         console.error('Error al obtener información de la receta:', err);
@@ -227,14 +227,14 @@ export class HomePage implements OnInit, OnDestroy {
   }*/
 
   verFavoritos() {
-    this.router.navigate(['/favoritos']);
+    this.router.navigate(['/main/favoritos']);
   }
 
   // Método para navegar a la página de edición de perfil
   onProfileClick() {
     console.log('Botón de perfil clickeado');
     console.log('Botón de perfil clickeado, navegando a /edit-profile');
-    this.router.navigate(['/edit-profile']);
+    this.router.navigate(['/main/edit-profile']);
     this.utilsSvc.presentToast({ message: 'Perfil de usuario', duration: 2000, color: 'success' });
   }
 }

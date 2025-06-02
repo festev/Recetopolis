@@ -6,28 +6,26 @@ import { FavoritosPage } from './favoritos/favoritos.page';
 
 const routes: Routes = [
   {
-    path: '',  component: MainPage
+    path: '',
+    redirectTo: 'home',
+    pathMatch: 'full'
   },
   {
     path: 'home',
-    loadChildren: () => import('./home/home.module').then( m => m.HomePageModule)
+    loadChildren: () => import('./home/home.module').then(m => m.HomePageModule)
   },
   {
-    path: 'profile',
-    loadChildren: () => import('./profile/profile.module').then( m => m.ProfilePageModule)
+    path: 'receta/:id',
+    loadChildren: () => import('./receta/receta.module').then(m => m.RecetaPageModule)
+  },
+  {
+    path: 'edit-profile',
+    loadChildren: () => import('./edit-profile/edit-profile.module').then(m => m.EditProfilePageModule)
   },
   {
     path: 'favoritos',
     loadChildren: () => import('./favoritos/favoritos.module').then( m => m.FavoritosPageModule)
-  },
-  { 
-    path: 'favoritos', component: FavoritosPage 
-  },  {
-    path: 'receta',
-    loadChildren: () => import('./receta/receta.module').then( m => m.RecetaPageModule)
-  },
-
-
+  }
 ];
 
 @NgModule({
