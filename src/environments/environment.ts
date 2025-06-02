@@ -19,13 +19,12 @@ export const environment = {
   production: false,
 
   firebaseConfig: {
-    apiKey: "AIzaSyDeGdMrABqcKYlte5sI3aS07GPRpPNSjY4",
-    authDomain: "login-recetas.firebaseapp.com",
-    projectId: "login-recetas",
-    storageBucket: "login-recetas.appspot.com",
-    messagingSenderId: "1039122732812",
-    appId: "1:1039122732812:web:9a4b0f9138bcd8f19a1b29",
-    measurementId: "G-T5X8CD61WX"
+    apiKey: "AIzaSyCJhHgBd0pMXIV2VVk31OeODF99qgbOai8",
+    authDomain: "mobilegrupo6recetas.firebaseapp.com",
+    projectId: "mobilegrupo6recetas",
+    storageBucket: "mobilegrupo6recetas.firebasestorage.app",
+    messagingSenderId: "686572772826",
+    appId: "1:686572772826:web:a1fe714c9b09dd22f6b4e3",
   }
 };
 

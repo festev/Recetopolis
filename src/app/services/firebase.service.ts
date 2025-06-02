@@ -13,7 +13,7 @@ import { map } from 'rxjs';
 export class FirebaseService {
 
   auth = inject(AngularFireAuth);
-  //firestore = inject(AngularFirestore);
+  firestore = inject(AngularFirestore);
   utilsSvc = inject(UtilsService);
 
   //===================== Autenticación ======================
