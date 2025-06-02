@@ -2,20 +2,18 @@ import { Component, OnInit, inject } from '@angular/core';
 import { FirebaseService } from 'src/app/services/firebase.service';
 import { UtilsService } from 'src/app/services/utils.service';
 import { User } from 'firebase/auth';
-/*import { Geolocation, Position } from '@capacitor/geolocation';*/ // Position no se usa, podría quitarse
+import { Geolocation, Position } from '@capacitor/geolocation'; // Position no se usa, podría quitarse
 import { GeoPoint } from 'firebase/firestore';
-/*import { Camera, CameraResultType, CameraSource, Photo } from '@capacitor/camera';*/
+import { Camera, CameraResultType, CameraSource, Photo } from '@capacitor/camera';
 import { ActionSheetController } from '@ionic/angular';
 
 @Component({
   selector: 'app-edit-profile',
   templateUrl: './edit-profile.page.html',
-  styleUrls: ['./edit-profile.page.scss'],
+  styleUrls: ['./edit-profile.page.scss']
 })
 export class EditProfilePage implements OnInit {
-  ngOnInit() {}}
 
-  /*
   firebaseSvc = inject(FirebaseService);
   utilsSvc = inject(UtilsService);
   actionSheetCtrl = inject(ActionSheetController);
@@ -249,4 +247,4 @@ export class EditProfilePage implements OnInit {
       this.utilsSvc.presentToast({ message: 'Error al procesar la imagen.', color: 'danger' });
     }
   }
-}*/
+}

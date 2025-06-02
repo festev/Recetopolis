@@ -1,4 +1,4 @@
-/*import { NgModule } from '@angular/core';
+import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 
@@ -17,4 +17,4 @@ import { EditProfilePage } from './edit-profile.page';
   ],
   declarations: [EditProfilePage]
 })
-export class EditProfilePageModule { }*/
+export class EditProfilePageModule { }

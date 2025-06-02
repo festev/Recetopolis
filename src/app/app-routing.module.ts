@@ -26,20 +26,20 @@ const routes: Routes = [
   // NUEVAS RUTAS:
   {
     path: 'receta/:id',
-    loadChildren: () => import('./pages/main/receta/receta.module').then(m => m.RecetaPageModule)
+    loadChildren: () => import('./pages/main/receta/receta.module').then(m => m.RecetaPageModule), canActivate:[AuthGuard]
   },
   {
     path: 'forgot-password',
-    loadChildren: () => import('./pages/forgot-password/forgot-password.module').then(m => m.ForgotPasswordPageModule)
+    loadChildren: () => import('./pages/forgot-password/forgot-password.module').then(m => m.ForgotPasswordPageModule), canActivate:[NoAuthGuard]
   },
   {
     path: 'reset-password/:token', // La ruta para restablecer contraseña espera un parámetro 'token'
-    loadChildren: () => import('./pages/reset-password/reset-password.module').then(m => m.ResetPasswordPageModule)
-  },/*
+    loadChildren: () => import('./pages/reset-password/reset-password.module').then(m => m.ResetPasswordPageModule), canActivate:[NoAuthGuard]
+  },
   {
     path: 'edit-profile',
-    loadChildren: () => import('./pages/edit-profile/edit-profile.module').then(m => m.EditProfilePageModule)
-  },*/
+    loadChildren: () => import('./pages/edit-profile/edit-profile.module').then(m => m.EditProfilePageModule), canActivate:[AuthGuard]
+  }
 
 ];
 
