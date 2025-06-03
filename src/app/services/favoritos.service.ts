@@ -1,5 +1,6 @@
-import { Injectable } from '@angular/core';
+import { inject, Injectable } from '@angular/core';
 import { Receta } from '../models/receta.model';
+import { FirebaseService } from './firebase.service';
 
 @Injectable({
   providedIn: 'root',
@@ -11,17 +12,55 @@ export class FavoritosService {
     this.loadFavoritos();
   }
 
-  private loadFavoritos(): void {
-    const data = localStorage.getItem('favoritos');
+    firebaseSvc = inject(FirebaseService);
+
+  async loadFavoritos(): Promise<void> {
+
+    try {
+      const uid = this.firebaseSvc.getAuth().currentUser?.uid;
+
+      const userDoc = await this.firebaseSvc.getDocument(`users/${uid}`);
+      const favoritosRaw = userDoc?.['favoritos'] ?? [];
+
+      this.favoritos = favoritosRaw.map((r: any) => new Receta(r));
+
+      // Guardamos en localStorage como respaldo
+      const userDataRaw = localStorage.getItem('userData');
+      const userData = userDataRaw ? JSON.parse(userDataRaw) : {};
+      userData.favoritos = favoritosRaw;
+      localStorage.setItem('userData', JSON.stringify(userData));
+
+      console.log("Favoritos cargados desde Firestore:", this.favoritos);
+    } catch (error) {
+        console.warn("No se pudo cargar desde Firestore. Usando localStorage.");
+
+        // Fallback: localStorage
+        const data = localStorage.getItem('userData');
+        if (data) {
+          try {
+            const userData = JSON.parse(data);
+            const favoritosRaw = userData.favoritos ?? [];
+
+            this.favoritos = favoritosRaw.map((r: any) => new Receta(r));
+          } catch (e) {
+            console.error('Error al cargar favoritos desde localStorage:', e);
+            this.favoritos = [];
+          }
+        }
+      }
+
+    /*const data = localStorage.getItem('userData');
     if (data) {
       try {
-        const raw = JSON.parse(data);
-        this.favoritos = raw.map((r: any) => new Receta(r));
+        const userData = JSON.parse(data);
+        const favoritosRaw = userData.favoritos ?? [];
+
+        this.favoritos = favoritosRaw.map((r: any) => new Receta(r));
       } catch (e) {
         console.error('Error al cargar favoritos:', e);
         this.favoritos = [];
       }
-    }
+    }*/
     console.log("loadFavoritos(): " + this.favoritos);
   }
 
@@ -37,8 +76,24 @@ export class FavoritosService {
     this.saveFavoritos();
   }
 
-  private saveFavoritos(): void {
-    localStorage.setItem('favoritos', JSON.stringify(this.favoritos));
+  private async saveFavoritos(): Promise<void> {
+    const userDataRaw = localStorage.getItem('userData');
+    let userData = userDataRaw ? JSON.parse(userDataRaw) : {};
+
+    const favoritosPlano = this.favoritos.map(f => f.toJson()); 
+    userData.favoritos = favoritosPlano;
+    
+    localStorage.setItem('userData', JSON.stringify(userData));
+
+    try {
+      const uid = this.firebaseSvc.getAuth().currentUser.uid;
+      if (!uid) throw new Error("Usuario no autenticado");
+
+      await this.firebaseSvc.setDocument(`users/${uid}`, { favoritos: favoritosPlano }, true);
+    } catch (error) {
+      console.error("Error guardando favoritos en Firestore:", error);
+    }
+
     console.log("saveFavoritos(): " + this.favoritos);
   }
 

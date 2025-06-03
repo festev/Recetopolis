@@ -24,6 +24,7 @@ export class FavoritosPage implements OnInit {
   ngOnInit(): void { }
 
   ionViewWillEnter() {
+    this.favoritosService.loadFavoritos();
     this.favoritos = this.favoritosService.getFavoritos();
   }
 

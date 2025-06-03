@@ -15,6 +15,17 @@ export class Receta {
         this.sourceUrl = data.sourceUrl;
     }
 
+    toJson(): object {
+        return {
+        id: this.id,
+        title: this.title,
+        image: this.image,
+        extendedIngredients: this.extendedIngredients,
+        instructions: this.instructions,
+        sourceUrl: this.sourceUrl
+        };
+    }
+
 }
 
 export class RecetaLista {

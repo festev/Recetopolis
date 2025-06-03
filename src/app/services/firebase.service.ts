@@ -1,7 +1,6 @@
 import { Injectable, inject } from '@angular/core';
 import { AngularFireAuth } from '@angular/fire/compat/auth';
 import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, updateProfile, sendPasswordResetEmail } from 'firebase/auth'
-import { User } from '../models/user.model';
 import { AngularFirestore } from '@angular/fire/compat/firestore';
 import { getFirestore, setDoc, doc, getDoc } from '@angular/fire/firestore';
 import { UtilsService } from './utils.service';
@@ -26,13 +25,13 @@ export class FirebaseService {
   }
 
   //===================== Acceder ======================
-  signIn(user: User) {
-    return signInWithEmailAndPassword(getAuth(), user.email, user.password)
+  signIn(email: string, password: string) {
+    return signInWithEmailAndPassword(getAuth(), email, password)
   }
 
   //===================== Crear Usuario ======================
-  signUp(user: User) {
-    return createUserWithEmailAndPassword(getAuth(), user.email, user.password)
+  signUp(email: string, password: string) {
+    return createUserWithEmailAndPassword(getAuth(), email, password)
   }
 
   //===================== Actualizar Usuario ======================
@@ -54,13 +53,14 @@ export class FirebaseService {
   //===================== Cerrar Sesión ======================
   signOut() {
     getAuth().signOut().then(() => {
-      localStorage.removeItem('user');
+      localStorage.removeItem('userAuth');
+      localStorage.removeItem('userData');
       this.utilsSvc.routerLink('/auth');
     });
   }
 
 
-  //===================== Base de Datos ======================
+  //===================== Base de Datos (Firestore) ======================
 
   //===================== Setear un documento ======================
   setDocument(path: string, data: any, mergeFields: boolean = false) { // Añadido parámetro mergeFields

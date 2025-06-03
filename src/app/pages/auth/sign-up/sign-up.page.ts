@@ -1,6 +1,6 @@
 import { Component, inject, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
-import { User } from 'src/app/models/user.model';
+import { UserAuth, UserData } from 'src/app/models/user.model';
 import { FirebaseService } from 'src/app/services/firebase.service';
 import { UtilsService } from 'src/app/services/utils.service';
 
@@ -30,27 +30,34 @@ export class SignUpPage implements OnInit {
       const loading = await this.utilsSvc.loading()
       await loading.present();
 
-      this.firebaseSvc.signUp(this.form.value as User).then(async res => {
+      try {
 
-        await this.firebaseSvc.updateUser(this.form.value.name);
+        const res = await this.firebaseSvc.signUp(this.form.value.email!, this.form.value.password!);
 
-        /*let uid = res.user.uid;
-        this.form.controls.uid.setValue(uid);
-
-        this.setUserInfo(uid);*/
-
-        const elUsuario = {
+        const userAuth: UserAuth = {
           uid: res.user.uid,
           email: res.user.email,
-          name: this.form.value.name
+          displayName: this.form.value.name,
+          phoneNumber: "",
+          photoURL: "",
         };
 
-        this.utilsSvc.saveInLocalStorage('user', elUsuario);
+        const userData: UserData = {
+          bio: "",
+          location: "",
+          favoritos: []
+        };
+
+        await this.firebaseSvc.updateUser(userAuth.displayName);
+        await this.firebaseSvc.setDocument(`users/${res.user.uid}`, userData, true)
+
+        this.utilsSvc.saveInLocalStorage('userAuth', userAuth);
+        this.utilsSvc.saveInLocalStorage('userData', userData);
         this.utilsSvc.routerLink('/main/home');
         this.form.reset();
 
         this.utilsSvc.presentToast({
-          message: `Te damos la bienvenida, ${elUsuario.name}`,
+          message: `Te damos la bienvenida, ${userAuth.displayName}`,
           duration: 1500,
           color: 'primary',
           position:'middle',
@@ -58,7 +65,7 @@ export class SignUpPage implements OnInit {
         })
 
 
-      }).catch(error => {
+      } catch(error: any) {
         console.log(error);
 
         this.utilsSvc.presentToast({
@@ -70,9 +77,9 @@ export class SignUpPage implements OnInit {
         })
 
 
-      }).finally(() => {
+      } finally {
         loading.dismiss();
-      })
+      }
     }
   }
 
