@@ -21,11 +21,14 @@ ion-toolbar.toolbar-with-center-clock.custom-black-toolbar {
   }
 
   .digital-clock-centered {
+    font-size: 0.9em;
+    max-width: 70%;
+    text-align: center;
     position: absolute;
     left: 50%;
     top: 50%;
     transform: translate(-50%, -50%);
-    font-size: 1.1em;
+    //font-size: 1.1em;
     font-weight: 500;
     white-space: nowrap;
     color: #ffffff; // Asegura texto blanco para la hora
@@ -36,45 +39,31 @@ ion-toolbar.toolbar-with-center-clock.custom-black-toolbar {
       // margin-right: 5px;
       color: #ffffff; // Asegura texto blanco para la etiqueta
     }
+
+    @media (max-width: 480px) {
+      font-size: 0.8em;
+    }
+
   }
 
-  // Estilos para el botón de cerrar sesión
-  .logout-button-style {
-    font-size: 0.85em;
-    text-transform: uppercase;
-    // Asegura que el texto y el icono del botón sean blancos
-    --color: #ffffff;
-    --color-activated: #cccccc; // Color cuando el botón está presionado (un gris claro)
-    --color-hover: #dddddd; // Color al pasar el mouse (si es aplicable)
-  }
-
-
-}
-
-#profile-icon-button {
-  position: absolute;
-  top: 16px;
-  left: 16px;
-  z-index: 999;
-
-  ion-icon {
-    font-size: 48px; // ----> AUMENTA ESTE VALOR para hacerlo más grande (ej. 40px, 48px, etc.)
-    color: #000000; // ----> CAMBIA ESTE VALOR a negro
-    // Si el negro puro es muy fuerte, puedes probar un gris oscuro:
-    // color: #333333;
-  }
-
-  // Opcional: Si al agrandar mucho el ícono, el área de clic del botón se siente pequeña,
-  // puedes definir un tamaño explícito para el botón y centrar el ícono.
-  // Si el ícono es de 48px, el botón podría ser un poco más grande:
-  /*
-  width: 56px;
-  height: 56px;
+.icon-button {
+  width: 48px;
+  height: 48px;
+  --padding-start: 0;
+  --padding-end: 0;
+  --border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  --border-radius: 50%; // Para que el botón siga siendo redondo si defines width y height
-  */
+  --color: #ffffff;
+
+  ion-icon {
+    font-size: 35px;
+    width: 35px;
+    height: 35px;
+  }
+}
+
 }
 
 // === Tus estilos existentes para el contenido de la página ===
@@ -83,15 +72,14 @@ ion-toolbar.toolbar-with-center-clock.custom-black-toolbar {
 .input-container {
   display: flex;
   align-items: center;
-  margin-top: 16px; // Añadido margen superior para separarlo del header
-  margin-bottom: 16px;
-  background-color: rgba(0, 0, 0, 0.7); // Usar rgba para transparencia
+  flex-direction: row;  
+  margin: 16px auto; // Centrado horizontal automático
   padding: 10px 15px;
+  background-color: rgba(0, 0, 0, 0.7); // Usar rgba para transparencia
   border-radius: 8px;
+  max-width: 90vw;
   width: fit-content; // Se ajusta al contenido
-  margin-left: auto;
-  margin-right: auto;
-  flex-direction: row;
+  box-sizing: border-box;
 }
 
 .input-container ion-label {
@@ -102,17 +90,15 @@ ion-toolbar.toolbar-with-center-clock.custom-black-toolbar {
 }
 
 .input-container ion-input {
-  flex-grow: 1; // Permite que el input crezca si hay espacio
-  min-width: 200px; // Ancho mínimo para el input
-  // width: 300px; // Puedes descomentar si prefieres un ancho fijo
-  border: 1px solid #555; // Borde un poco más oscuro para contraste
+  flex: 1 1 auto;
+  max-width: 100%;
+  border: 1px solid #555;
   border-radius: 4px;
-  // padding: 8px; // Ionic inputs manejan su padding interno con variables CSS
-  --background: #fff; // Fondo blanco para el input
-  --color: #000; // Color de texto negro para el input
+  --background: #fff;
+  --color: #000;
   --padding-start: 10px;
   --padding-end: 10px;
-  height: 40px; // Altura fija para el input
+  height: 40px;
 }
 
 .button-container {
@@ -128,12 +114,66 @@ ion-toolbar.toolbar-with-center-clock.custom-black-toolbar {
 .button-container ion-button {
   // margin-right: 8px; // Ya no es necesario gracias a 'gap'
   flex-grow: 1; // Permite que los botones crezcan para llenar el espacio
-  max-width: 220px; // Ancho máximo por botón, ajusta según necesites
+  width: 100%;
+  max-width: 300px;
+
+  @media (min-width: 500px) {
+    width: auto;
+  }
 }
 
-ion-content {
+ion-content.recetas-content {
   --background: url('/assets/images/fondo2.jpg') no-repeat center center / cover;
 }
+
+.wrapper {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.botonesTop {
+  flex-shrink: 0; 
+  padding: 10px 15px;
+}
+
+/*
+.swiper-wrapper {
+  display: flex;
+  flex-direction: column;
+  overflow: auto;
+}
+*/
+
+swiper-container {
+  width: 80%;
+}
+
+ion-list {
+  --ion-background-color: transparent; // Asegura que Ionic no aplique un fondo
+  backdrop-filter: blur(8px); // Efecto de desenfoque
+  border-radius: 12px; // Esquinas redondeadas
+  margin: 10px 16px; // Margen alrededor de la lista (ajustado para más espacio lateral)
+  padding: 3%; // Padding vertical interno
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); // Sombra sutil
+  overflow-y: auto;
+  height: 60vh;
+}
+
+swiper-container::part(button-prev),
+swiper-container::part(button-next) {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  color: var(--ion-color-primary);
+  transition: background-color 0.3s ease;
+}
+
+
+swiper-container::part(pagination) {
+  bottom: 4%;
+}
+
 
 ion-card {
   transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
@@ -150,53 +190,41 @@ ion-card {
 .hover-item {
   transition: background-color 0.2s ease-out;
   --background-hover: var(--ion-color-light-tint);
+  padding: 2px 2px;
   // CORREGIDO: Se añade la propiedad cursor para cambiar el icono del mouse
   cursor: pointer; // Esto cambiará el cursor a una mano/puntero
 
   &:hover {
     background-color: var(--background-hover);
-
     h2 {
       color: var(--ion-color-primary); // Cambia el color del título en hover si lo deseas
     }
   }
 }
 
-ion-list {
-  --ion-background-color: transparent; // Asegura que Ionic no aplique un fondo
-  backdrop-filter: blur(8px); // Efecto de desenfoque
-  border-radius: 12px; // Esquinas redondeadas
-  margin: 10px 16px; // Margen alrededor de la lista (ajustado para más espacio lateral)
-  padding: 3%; // Padding vertical interno
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); // Sombra sutil
+ion-label h2 {
+  font-size: 1em;
+  word-break: break-word;
 }
 
-/* ================ PAGINACION ================== */
+@media screen and (max-width: 600px) {
+  ion-toolbar.toolbar-with-center-clock.custom-black-toolbar {
+    .toolbar-title-left-aligned {
+      display: none; // Oculta el título en pantallas pequeñas
+    }
 
-swiper-container {
-  position: relative;
-  padding: 0 2rem 3rem 2rem; /* izquierda, derecha y abajo */
-  --swiper-navigation-top-offset: 50%;     /* Posición vertical */
-  --swiper-navigation-color: #999;  
-  //--swiper-navigation-size: 6vw;               /* Flechas relativas al ancho de pantalla */
-  //--swiper-navigation-sides-offset: 4vw;       /* Margen desde el borde */
+    .digital-clock-centered {
+      position: static; // Elimina posicionamiento absoluto
+      transform: none;
+      margin-left: 8px; // Separación del borde izquierdo
+      font-size: 1em;
+      text-align: left;
+    }
 
-  --swiper-pagination-color: #999;
-  --swiper-pagination-bullet-inactive-color: #cccccc71;
-  --swiper-pagination-bullet-opacity: 1;
-  //--swiper-pagination-bottom: 5vh;     /* Distancia desde abajo */
-}
-
-swiper-container::part(button-prev) {
-  left: 2%;
-}
-
-swiper-container::part(button-next) {
-  right: 2%;
-}
-
-swiper-container::part(pagination) {
-  bottom: 4%;
+    ion-buttons {
+      margin-left: auto; // Empuja el botón de logout a la derecha
+    }
+  }
 }
 
 // DESCOMENTAR SI SE QUIEREN ACTIVAR LOS BOTONES:
