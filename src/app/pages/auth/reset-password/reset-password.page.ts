@@ -23,6 +23,11 @@ export class ResetPasswordPage implements OnInit {
     // private authService: AuthService // Descomenta si tienes un servicio
   ) { }
 
+    /**
+   * @function ngOnInit
+   * @description Inicializa el componente obteniendo el token de la URL. Si no se encuentra, redirige al login.
+   * @returns {void}
+   */
   ngOnInit() {
     this.token = this.route.snapshot.paramMap.get('token');
     if (!this.token) {
@@ -32,6 +37,11 @@ export class ResetPasswordPage implements OnInit {
     }
   }
 
+  /**
+   * @function onSubmit
+   * @description Valida las contraseñas y simula el restablecimiento de contraseña con el token recibido.
+   * @returns {Promise<void>} Promesa que se resuelve tras completar el proceso de restablecimiento.
+   */
   async onSubmit() {
     if (this.password !== this.confirmPassword) {
       this.presentToast('Las contraseñas no coinciden.', 'warning');
@@ -75,6 +85,13 @@ export class ResetPasswordPage implements OnInit {
     }
   }
 
+    /**
+   * @function presentAlert
+   * @description Muestra un cuadro de alerta con un título y mensaje personalizado.
+   * @param {string} header - Título del cuadro de alerta.
+   * @param {string} message - Mensaje a mostrar en la alerta.
+   * @returns {Promise<void>} Promesa que se resuelve cuando se muestra la alerta.
+   */
   async presentAlert(header: string, message: string) {
     const alert = await this.alertController.create({
       header,
@@ -84,6 +101,14 @@ export class ResetPasswordPage implements OnInit {
     await alert.present();
   }
 
+  
+  /**
+   * @function presentToast
+   * @description Muestra un mensaje emergente (toast) con color y contenido personalizado.
+   * @param {string} message - Texto del toast.
+   * @param {string} [color='danger'] - Color del toast ('primary', 'warning', 'danger', etc.).
+   * @returns {Promise<void>} Promesa que se resuelve cuando se muestra el toast.
+   */
   async presentToast(message: string, color: string = 'danger') {
     const toast = await this.toastController.create({
       message,

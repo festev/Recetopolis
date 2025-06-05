@@ -1,6 +1,7 @@
-// src/app/pages/auth/auth.page.scss
-
-// Estilos existentes que proporcionaste
+/*
+ * Contenedor principal para centrar el contenido del formulario en la página.
+ * Utiliza Flexbox para alinear vertical y horizontalmente.
+ */
 .d-flex-center {
   display: flex;
   justify-content: center;
@@ -8,6 +9,10 @@
   min-height: 100%; // Asegura que el contenedor ocupe al menos toda la altura
 }
 
+/*
+ * Estilos para el formulario de autenticación.
+ * Define el ancho máximo y el padding.
+ */
 .auth-form {
   width: 100%;
   max-width: 400px;
@@ -15,14 +20,22 @@
   padding: 20px 16px;
 }
 
+/*
+ * Estilos para el componente del logo (app-logo).
+ * Lo muestra como un bloque y lo centra horizontalmente con un margen inferior.
+ */
 app-logo {
   display: block;
   margin: 0 auto 15px;
 }
 
+/*
+ * Estilos para el texto del nombre de la aplicación.
+ * Se aplica al h1 dentro del elemento con ID #text_logo.
+*/
 #text_logo h1 {
   text-align: center;
-  margin: 0 0 20px;
+  margin: 0 0 20px; // Sin margen superior, margen inferior para separar
   font-size: 1.8em;
 }
 
@@ -31,7 +44,6 @@ app-logo {
   font-size: 0.8em;
   color: var(--ion-color-danger);
   padding-left: 4px; // Pequeño padding para alinear con el texto del input si es necesario
-  // CORREGIDO: Ajuste de márgenes para evitar superposición
   margin-top: 4px; // Espacio entre el input y el mensaje de error
   margin-bottom: 8px; // Espacio entre el mensaje de error y el siguiente elemento
   text-align: left; // Asegura alineación a la izquierda para los mensajes
@@ -41,14 +53,14 @@ app-logo {
 // Estilos para el enlace "Olvidaste tu contraseña"
 .forgot-password-link {
   color: var(--ion-color-primary);
-  text-decoration: none;
+  text-decoration: none; // Sin subrayado por defecto
   font-size: 0.9em;
   display: inline-block;
   padding-top: 5px;
 }
 
 .forgot-password-link:hover {
-  text-decoration: underline;
+  text-decoration: underline; // Subrayado al pasar el mouse
 }
 
 // Ajustes opcionales para los botones

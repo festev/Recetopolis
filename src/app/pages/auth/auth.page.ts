@@ -1,9 +1,8 @@
-// src/app/pages/auth/auth.page.ts
 import { Component, inject, OnInit } from '@angular/core';
-import { FormControl, FormGroup, Validators } from '@angular/forms'; // Asegúrate que FormControl y FormGroup estén importados
+import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { UserData, UserAuth } from 'src/app/models/user.model';
-import { FirebaseService } from 'src/app/services/firebase.service';
-import { UtilsService } from 'src/app/services/utils.service';
+import { FirebaseService } from 'src/app/services/firebase.service'; // Servicio para interactuar con Firebase
+import { UtilsService } from 'src/app/services/utils.service'; // Servicio para utilidades (loaders, toasts, navegación, etc.)
 
 @Component({
   selector: 'app-auth',
@@ -12,30 +11,48 @@ import { UtilsService } from 'src/app/services/utils.service';
 })
 export class AuthPage implements OnInit {
 
+   /**
+   * Patrón de expresión regular para validar el formato del correo electrónico.
+   * Este patrón es un poco más completo que el validador Validators.email por defecto de Angular.
+   */
   private emailPattern: string = "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$";
 
+  //* Definición del formulario reactivo para la autenticación.
   form = new FormGroup({
     email: new FormControl('', [
-      Validators.required,
-      Validators.email,
-      Validators.pattern(this.emailPattern)]),
+      Validators.required, // El correo es obligatorio
+      Validators.email, // Valida que sea un formato de email básico
+      Validators.pattern(this.emailPattern)]), // Valida contra el patrón personalizado para mayor precisión
 
-    password: new FormControl('', [Validators.required])
+    password: new FormControl('', [Validators.required]) // La contraseña es obligatoria
   });
 
-  firebaseSvc = inject(FirebaseService);
-  utilsSvc = inject(UtilsService);
+  firebaseSvc = inject(FirebaseService); // Servicio para la lógica de Firebase (autenticación, base de datos)
+  utilsSvc = inject(UtilsService); // Servicio para funcionalidades útiles y comunes en la UI
 
   constructor() {
 
   }
 
+    /**
+   * @function ngOnInit
+   * @description Hook de inicialización del componente.
+   * @returns {void}
+   */
   ngOnInit() {
   }
 
-  async submit() {
-    if (this.form.valid) {
+  // Public Methods (accesibles desde el template)
 
+    /**
+   * @function submit
+   * @description Envía el formulario de inicio de sesión, autentica al usuario y guarda sus datos en localStorage.
+   * @returns {Promise<void>} Promesa que se resuelve una vez finalizado el proceso de login.
+   */
+  async submit() {
+    if (this.form.valid) { // Procede solo si el formulario y sus campos son válidos
+
+      // Muestra un indicador de carga mientras se procesa la solicitud
       const loading = await this.utilsSvc.loading();
       await loading.present();
 
@@ -45,6 +62,7 @@ export class AuthPage implements OnInit {
         
         const userData = await this.firebaseSvc.getDocument(`users/${res.user.uid}`) as UserData;
 
+        // Crea un objeto con la información esencial del usuario obtenida de la respuesta de Firebase
         const userAuth: UserAuth = {
           uid: res.user.uid,
           email: res.user.email,
@@ -52,9 +70,10 @@ export class AuthPage implements OnInit {
           photoURL: "",
         };
 
+        // Guarda la información del usuario en el LocalStorage para persistir la sesión
         this.utilsSvc.saveInLocalStorage('userAuth', userAuth);
         this.utilsSvc.saveInLocalStorage('userData', userData);
-        this.utilsSvc.routerLink('/main/home'); // Asegúrate que esta ruta sea la correcta post-login
+        this.utilsSvc.routerLink('/main/home');
         this.form.reset();
 
         this.utilsSvc.presentToast({
@@ -87,14 +106,31 @@ export class AuthPage implements OnInit {
   }
 
   // Getters para acceder fácilmente a los controles del formulario en el template
+
+    /**
+   * @function email
+   * @description Getter para acceder al control 'email' del formulario.
+   * @returns {FormControl | null} Control del campo 'email'.
+   */
   get email() {
     return this.form.get('email');
   }
 
+    /**
+   * @function password
+   * @description Getter para acceder al control 'password' del formulario.
+   * @returns {FormControl | null} Control del campo 'password'.
+   */
   get password() {
     return this.form.get('password');
   }
   // Función para traducir errores de Firebase a mensajes amigables
+
+    /**
+   * @function password
+   * @description Getter para acceder al control 'password' del formulario.
+   * @returns {FormControl | null} Control del campo 'password'.
+   */
   firebaseErrorToString(errorCode: string): string {
     switch (errorCode) {
       case 'auth/invalid-email':
@@ -115,47 +151,5 @@ export class AuthPage implements OnInit {
     }
   }
 
-  /*
-  // Tu función getUserInfo original, comentada como la tenías.
-  // Si la necesitas, asegúrate de que la lógica y el manejo de errores sean consistentes.
-  async getUserInfo(uid: string) {
-    if (this.form.valid) { // Considera si esta validación de formulario es necesaria aquí
-
-      const loading = await this.utilsSvc.loading()
-      await loading.present();
-
-      let path =  `users/${uid}`
-
-      this.firebaseSvc.getDocument(path).then((user: User) => {
-
-        this.utilsSvc.saveInLocalStorage('user',user);
-        this.utilsSvc.routerLink('/main/home');
-        this.form.reset();
-
-        this.utilsSvc.presentToast({
-          message: `Te damos la bienvenida ${user.name}`, // Asumiendo que User tiene 'name'
-          duration:1500,
-          color: 'primary',
-          position:'middle',
-          icon: 'person-circle-outline'
-        })
-
-      }).catch(error =>{
-        console.log(error);
-
-        this.utilsSvc.presentToast({
-          message: error.message, // Considera usar firebaseErrorToString aquí también
-          duration:2500,
-          color: 'danger', // Color 'danger' para errores
-          position:'middle',
-          icon: 'alert-circle-outline'
-        })
-
-      }).finally(() =>{
-        loading.dismiss();
-      })
-    }
-  }
-  */
 }
 

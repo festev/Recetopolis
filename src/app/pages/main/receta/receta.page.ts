@@ -22,6 +22,13 @@ export class RecetaPage implements OnInit {
     public utilsSvc: UtilsService
   ) { }
 
+  /**
+ * @function ngOnInit
+ * @description Método del ciclo de vida de Angular que se ejecuta al iniciar el componente. 
+ * Obtiene el ID de la receta desde la URL y carga la receta seleccionada desde el service.
+ * Si el ID es inválido o no hay receta en el service, redirige a la página de inicio.
+ * @returns {void}
+ */
   ngOnInit() {
     const idParam = this.activatedRoute.snapshot.paramMap.get('id');
     const id = idParam ? parseInt(idParam) : null;
@@ -44,11 +51,21 @@ export class RecetaPage implements OnInit {
     }
   }
 
+  /**
+ * @function cambiarFavorito
+ * @description Alterna el estado de favorito de la receta actual usando el servicio de favoritos.
+ * @returns {void}
+ */
   cambiarFavorito() {
     this.favoritosService.toggleFavorito(this.receta);
     this.esFavorito = this.favoritosService.isFavorito(this.receta.id);
   }
 
+  /**
+ * @function ionViewWillLeave
+ * @description Método de ciclo de vida de Ionic que se ejecuta al abandonar la vista. Limpia la receta seleccionada en el servicio.
+ * @returns {void}
+ */
   ionViewWillLeave() { //cada vez que se sale de la página (no importa que), la recetaSeleccionada (del service) se vacía
     this.recipesService.setRecetaSeleccionada(null);
   }
