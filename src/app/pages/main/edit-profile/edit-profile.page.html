@@ -8,25 +8,28 @@
 </ion-header>
 
 <ion-content class="ion-padding">
-  <div *ngIf="currentUser">
+  <div *ngIf="userAuth">
 
     <div class="profile-picture-container ion-text-center ion-padding-vertical">
-      <ion-avatar (click)="selectImageSource()">
-        <img *ngIf="profileImageUrl" [src]="profileImageUrl" alt="Foto de perfil" />
-        <img *ngIf="!profileImageUrl" src="assets/icon/avatar-placeholder.png" alt="Placeholder de perfil" />
-      </ion-avatar>
-      <ion-button fill="clear" (click)="selectImageSource()">
-        <ion-icon slot="start" name="camera-outline"></ion-icon>
-        Cambiar Foto
-      </ion-button>
+      <div style="display: flex; flex-direction: column; align-items: center;">
+        <ion-avatar (click)="selectImageSource()">
+          <img *ngIf="profileImageUrl" [src]="profileImageUrl" alt="Foto de perfil" />
+          <img *ngIf="!profileImageUrl" src="assets/icon/avatar-placeholder.png" alt="Placeholder de perfil" />
+        </ion-avatar>
+
+        <ion-button fill="clear" (click)="selectImageSource()">
+          <ion-icon slot="start" name="camera-outline"></ion-icon>
+          Cambiar Foto
+        </ion-button>
+      </div>
     </div>
 
     <ion-list lines="full">
       <ion-item>
         <ion-label position="stacked">Nombre para mostrar</ion-label>
         <ion-input type="text" [(ngModel)]="displayName" placeholder="Tu nombre" name="displayNameInput" required>
-        </ion-input>
-      </ion-item>
+      </ion-input>
+    </ion-item>
 
       <ion-item>
         <ion-label position="stacked">Biografía</ion-label>
@@ -43,7 +46,7 @@
 
       <ion-item lines="none">
         <ion-label>
-          <p><strong>Email:</strong> {{ currentUser.email }}</p>
+          <p><strong>Email:</strong> {{ userAuth.email }}</p>
           <p><small>(El email no se puede cambiar desde aquí)</small></p>
         </ion-label>
       </ion-item>
@@ -77,7 +80,7 @@
     </ion-button>
   </div>
 
-  <div *ngIf="!currentUser" class="ion-text-center ion-padding">
+  <div *ngIf="!userAuth" class="ion-text-center ion-padding">
     <p>Cargando información del perfil...</p>
     <ion-spinner name="crescent"></ion-spinner>
   </div>

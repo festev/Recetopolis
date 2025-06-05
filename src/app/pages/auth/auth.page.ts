@@ -49,7 +49,6 @@ export class AuthPage implements OnInit {
           uid: res.user.uid,
           email: res.user.email,
           displayName: res.user.displayName,
-          phoneNumber: "",
           photoURL: "",
         };
 

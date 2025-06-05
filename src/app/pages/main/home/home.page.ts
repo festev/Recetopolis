@@ -5,6 +5,7 @@ import { UtilsService } from 'src/app/services/utils.service';
 import { RecipesService } from 'src/app/services/recipes.service';
 import { Router } from '@angular/router';
 import { Receta, RecetaLista } from 'src/app/models/receta.model';
+import { UserAuth } from 'src/app/models/user.model';
 
 
 // ... (@Component decorator)
@@ -20,6 +21,7 @@ export class HomePage implements OnInit, OnDestroy {
 
   firebaseSvc = inject(FirebaseService);
   utilsSvc = inject(UtilsService);
+  userAuth: UserAuth | null = null;
 
   ingredientToAdd: string = '';
   recipes: RecetaLista[] = [];
@@ -50,6 +52,11 @@ export class HomePage implements OnInit, OnDestroy {
     this.timerInterval = setInterval(() => {
       this.updateTime();
     }, 1000);
+  }
+
+  ionViewWillEnter(){
+    const raw = localStorage.getItem('userAuth');
+    this.userAuth = raw ? JSON.parse(raw) as UserAuth : null;
   }
 
   ngOnDestroy() {

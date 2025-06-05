@@ -39,6 +39,10 @@ export class FirebaseService {
     return updateProfile(getAuth().currentUser, { displayName })
   }
 
+  updatePhotoUrl(photoURL: string) {
+    return updateProfile(getAuth().currentUser, { photoURL })
+  }
+
   //===================== Enviar email para restablecer contraseña ======================
   sendRecoveryEmail(email: string) {
     const actionCodeSettings = {

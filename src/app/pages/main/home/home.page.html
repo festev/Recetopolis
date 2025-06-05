@@ -9,9 +9,10 @@
     </div>
 
     <ion-buttons slot="end">
-      <ion-button (click)="onProfileClick()" fill="clear" class="icon-button">
-        <ion-icon slot="icon-only" name="person-circle-outline" aria-label="Perfil"></ion-icon>
-      </ion-button>
+        <ion-button class="icon-button" fill="clear" (click)="onProfileClick()">
+          <img *ngIf="userAuth && userAuth.photoURL !== ''" [src]="userAuth.photoURL" alt="Foto de perfil" />
+          <img *ngIf="!userAuth || userAuth.photoURL === ''" src="assets/icon/avatar-placeholder.png" alt="Placeholder de perfil" />
+        </ion-button>
       <ion-button (click)="signOut()" fill="clear" class="icon-button">
         <ion-icon slot="icon-only" name="log-out-outline" aria-label="Cerrar sesión"></ion-icon>
       </ion-button>
@@ -25,7 +26,7 @@
     <div class="botonesTop">
       <div class="input-container">
         <ion-label position="start">Agregar Ingredientes:</ion-label>
-        <ion-input [(ngModel)]="ingredientToAdd" placeholder="Ejemplo: zanahorias"></ion-input>
+        <ion-input [(ngModel)]="ingredientToAdd" placeholder="Ejemplo: carrot, potato"></ion-input>
       </div>
 
       <div class="button-container">

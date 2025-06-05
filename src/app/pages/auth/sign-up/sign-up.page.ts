@@ -38,13 +38,13 @@ export class SignUpPage implements OnInit {
           uid: res.user.uid,
           email: res.user.email,
           displayName: this.form.value.name,
-          phoneNumber: "",
           photoURL: "",
         };
 
         const userData: UserData = {
           bio: "",
-          location: "",
+          location: null,
+          phoneNumber: "",
           favoritos: []
         };
 

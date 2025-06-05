@@ -6,6 +6,8 @@ import { Geolocation, Position } from '@capacitor/geolocation'; // Position no s
 import { GeoPoint } from 'firebase/firestore';
 import { Camera, CameraResultType, CameraSource, Photo } from '@capacitor/camera';
 import { ActionSheetController } from '@ionic/angular';
+import { UserAuth, UserData } from 'src/app/models/user.model';
+import { Receta } from 'src/app/models/receta.model';
 
 @Component({
   selector: 'app-edit-profile',
@@ -18,7 +20,9 @@ export class EditProfilePage implements OnInit {
   utilsSvc = inject(UtilsService);
   actionSheetCtrl = inject(ActionSheetController);
 
-  currentUser: User | null = null;
+  userAuth: UserAuth;
+  userData: UserData;
+
   displayName: string = '';
   bio: string = '';
   phoneNumber: string = '';
@@ -37,22 +41,43 @@ export class EditProfilePage implements OnInit {
   }
 
   async loadUserProfile() {
-    const user = this.firebaseSvc.getAuth().currentUser;
-    if (user) {
-      this.currentUser = user;
-      this.displayName = user.displayName || '';
-      this.profileImageUrl = user.photoURL;
+    const userAuthRaw = localStorage.getItem('userAuth');
+    const userDataRaw = localStorage.getItem('userData');
+
+    if(userAuthRaw && userDataRaw){
+      this.userAuth = JSON.parse(userAuthRaw) as UserAuth;
+      const parsed = JSON.parse(userDataRaw);
+      const favoritos = (parsed.favoritos || []).map((r: any) => new Receta(r));
+
+      this.userData = {
+      ...parsed,
+      favoritos,
+      } as UserData;
+
+    } else {
+      this.userAuth = this.firebaseSvc.getAuth().currentUser as UserAuth;
+      try{
+        const userDoc = await this.firebaseSvc.getDocument(`users/${this.userAuth.uid}`) as UserData;
+        const favoritos = (userDoc?.favoritos || []).map((r: any) => new Receta(r));
+
+        this.userData = {
+        ...userDoc,
+        favoritos
+        } as UserData;
+      } catch (error) {
+        console.error('Error al obtener datos del usuario:', error);
+      }
+    }
+    if (this.userAuth) {
+      this.displayName =  this.userAuth.displayName || '';
+      this.profileImageUrl = this.userAuth.photoURL;
 
       try {
-        const userDocPath = `users/${user.uid}`;
-        const userData = await this.firebaseSvc.getDocument(userDocPath);
-        if (userData) {
-          this.bio = userData['bio'] || '';
-          this.phoneNumber = userData['phoneNumber'] || '';
-          // Si también guardas photoURL en Firestore y quieres que esa tenga precedencia:
-          // if (userData['photoURL']) { this.profileImageUrl = userData['photoURL']; }
+        if (this.userData) {
+          this.bio = this.userData.bio || '';
+          this.phoneNumber = this.userData.phoneNumber || '';
 
-          const firestoreLocation = userData['location'];
+          const firestoreLocation = this.userData.location;
           if (firestoreLocation && typeof firestoreLocation.latitude === 'number' && typeof firestoreLocation.longitude === 'number') {
             this.location = {
               latitude: firestoreLocation.latitude,
@@ -94,7 +119,7 @@ export class EditProfilePage implements OnInit {
   }
 
   async saveProfile() {
-    if (!this.currentUser) {
+    if (!this.userAuth) {
       this.utilsSvc.presentToast({ message: 'Error: Usuario no autenticado.', color: 'danger' });
       return;
     }
@@ -112,29 +137,29 @@ export class EditProfilePage implements OnInit {
       console.log('saveProfile: Intentando actualizar Auth displayName...'); // <--- LOG AÑADIDO
       await this.firebaseSvc.updateUser(this.displayName.trim());
       console.log('saveProfile: Auth displayName actualizado (o no hubo error).'); // <--- LOG AÑADIDO
-
-      const userProfileData: {
-        displayName: string;
-        bio: string;
-        phoneNumber: string;
-        email: string | null | undefined;
-        location?: GeoPoint | null;
-      } = {
-        displayName: this.displayName.trim(),
-        bio: this.bio.trim(),
-        phoneNumber: this.phoneNumber.trim(),
-        email: this.currentUser?.email,
-      };
+      console.log('saveProfile: Intentando actualizar imageUrl...'); // <--- LOG AÑADIDO
+      await this.firebaseSvc.updatePhotoUrl(this.profileImageUrl.substring(0, 200));
+      console.log('saveProfile: Auth photoURL actualizado (o no hubo error).'); // <--- LOG AÑADIDO
 
       if (this.location && typeof this.location.latitude === 'number' && typeof this.location.longitude === 'number') {
-        userProfileData.location = new GeoPoint(this.location.latitude, this.location.longitude);
-        console.log('saveProfile: GeoPoint para ubicación creado:', userProfileData.location); // <--- LOG AÑADIDO
+        this.userData.location = new GeoPoint(this.location.latitude, this.location.longitude);
+        console.log('saveProfile: GeoPoint para ubicación creado:', this.userData.location); // <--- LOG AÑADIDO
       }
+      this.userAuth.displayName = this.displayName.trim();
+      this.userAuth.photoURL = this.profileImageUrl;
+      this.userData.bio = this.bio;
+      this.userData.phoneNumber = this.phoneNumber;
+      const userDataToSave = {
+      ...this.userData,
+      favoritos: this.userData.favoritos.map(fav => fav.toJson ? fav.toJson() : fav)};
 
-      const userDocPath = `users/${this.currentUser.uid}`;
+      localStorage.setItem('userAuth', JSON.stringify(this.userAuth));
+      localStorage.setItem('userData', JSON.stringify(userDataToSave));
+
+      const userDocPath = `users/${this.userAuth.uid}`;
       console.log('saveProfile: Intentando guardar/actualizar documento en Firestore en la ruta:', userDocPath); // <--- LOG AÑADIDO
-      console.log('saveProfile: Datos a guardar en Firestore:', JSON.stringify(userProfileData)); // <--- LOG AÑADIDO (JSON.stringify para ver mejor el objeto)
-      await this.firebaseSvc.setDocument(userDocPath, userProfileData, true);
+      console.log('saveProfile: Datos a guardar en Firestore:', JSON.stringify(this.userData)); // <--- LOG AÑADIDO (JSON.stringify para ver mejor el objeto)
+      await this.firebaseSvc.setDocument(userDocPath, userDataToSave, true);
       console.log('saveProfile: Documento en Firestore guardado/actualizado (o no hubo error).'); // <--- LOG AÑADIDO
 
       this.utilsSvc.presentToast({
@@ -220,15 +245,15 @@ export class EditProfilePage implements OnInit {
     console.log('takePicture llamada con source:', source);
     try {
       const image = await Camera.getPhoto({
-        quality: 90,
+        quality: 10,
         allowEditing: false, // O true si quieres que el usuario pueda recortar
-        resultType: CameraResultType.Uri, // Nos da una URL web para la vista previa (webPath)
+        resultType: CameraResultType.Base64, // Nos da una URL web para la vista previa (webPath)
         source: source
       });
 
       // image.webPath será la URL para mostrar en <img src="...">
-      if (image.webPath) {
-        this.profileImageUrl = image.webPath;
+      if (image.base64String) {
+        this.profileImageUrl = `data:image/jpeg;base64,${image.base64String}`;
         // Aquí guardaremos la imagen para subirla después. Por ahora solo la mostramos.
         // this.profileImageFile = await this.convertPathToBlob(image.webPath); // Necesitaremos esta función más adelante
         console.log('Imagen seleccionada (vista previa):', this.profileImageUrl);
