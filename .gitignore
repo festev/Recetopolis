@@ -72,3 +72,4 @@ Thumbs.db
 # Mis ignore
 /android
 /assets
+/.vscode
